@@ -3,326 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر الأكل المجمد - الرئيسية</title>
+    <title>FrozenShop - متجر الأطعمة المجمدة</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+
     <style>
         :root {
-            --primary-color: #2563eb;
-            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-            --background-color: #f8fafc;
-            --card-background: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --danger-color: #ef4444;
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --primary-light: #60a5fa;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Cairo', sans-serif;
-            background: var(--background-color);
-            color: var(--text-main);
-            overflow-x: hidden;
+            background: var(--bg);
+            color: var(--dark);
+            min-height: 100vh;
         }
 
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes pulseGlow {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
-            70% { transform: scale(1.02); box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-
-        /* Navigation Bar */
-        nav {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 12px 40px;
-            box-shadow: 0 4px 30px rgba(0,0,0,0.03);
+        /* Header */
+        .header {
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
             position: sticky;
             top: 0;
             z-index: 100;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 20px;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-        }
-
-        .nav-right-side {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo-img {
-            height: 50px;
-            object-fit: contain;
-            transition: transform 0.3s ease;
-        }
-
-        .logo-img:hover {
-            transform: scale(1.05);
-        }
-
-        .nav-links {
-            display: flex;
             gap: 20px;
-            list-style: none;
         }
 
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 15px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            background: rgba(59, 130, 246, 0.08);
-            color: var(--primary-color);
-        }
-
-        .nav-auth-side {
+        .logo {
             display: flex;
-            gap: 12px;
             align-items: center;
-        }
-
-        .btn-auth {
-            padding: 10px 22px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            gap: 10px;
             text-decoration: none;
-            font-family: 'Cairo', sans-serif;
         }
 
-        .btn-login {
-            background: transparent;
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
+        .logo img {
+            height: 45px;
+            object-fit: contain;
         }
 
-        .btn-login:hover {
-            background: rgba(59, 130, 246, 0.05);
-            transform: translateY(-2px);
+        .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
         }
 
-        .btn-signup {
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
-        }
-
-        .btn-signup:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
-        }
-
-        /* User Profile Dropdown */
-        .user-menu {
-            display: none; /* Controlled by JS */
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
             position: relative;
-            gap: 12px;
-            align-items: center;
         }
 
-        .user-avatar {
+        .search-bar input {
+            width: 100%;
+            padding: 10px 45px 10px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-bar i {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-light);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-btn {
             width: 42px;
             height: 42px;
-            border-radius: 50%;
-            background: var(--primary-gradient);
+            border-radius: 12px;
+            border: none;
+            background: var(--bg);
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            position: relative;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .header-btn:hover { background: var(--primary); color: white; }
+
+        .header-btn .badge {
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            background: var(--danger);
             color: white;
+            font-size: 11px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
-            transition: transform 0.3s ease;
         }
 
-        .user-avatar:hover {
-            transform: scale(1.05);
-        }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 55px;
-            left: 0;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            min-width: 180px;
-            z-index: 101;
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            overflow: hidden;
-            animation: fadeIn 0.2s ease;
-        }
-
-        .dropdown-menu.show {
-            display: block;
-        }
-
-        .dropdown-menu a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 20px;
-            color: var(--text-main);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .dropdown-menu a:last-child {
-            border-bottom: none;
-            color: var(--danger-color);
-        }
-
-        .dropdown-menu a:hover {
-            background: #f8fafc;
-            padding-right: 25px;
-        }
-
-        /* Container */
-        .container {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%), url('https://images.unsplash.com/photo-1547592180-85f173990554?q=80&w=1200') no-repeat center/cover;
+        .login-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            padding: 90px 40px;
-            text-align: center;
-            margin: 40px 0;
-            border-radius: 24px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            animation: fadeIn 0.8s ease;
-        }
-
-        .hero h1 {
-            font-size: 52px;
-            margin-bottom: 20px;
-            font-weight: 900;
-            letter-spacing: -1px;
-        }
-
-        .hero p {
-            font-size: 20px;
-            margin-bottom: 35px;
-            opacity: 0.85;
-            font-weight: 300;
-        }
-
-        .hero-btn {
-            background: white;
-            color: var(--primary-color);
-            padding: 16px 45px;
             border: none;
             border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: 700;
-            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            animation: pulseGlow 2s infinite;
+            gap: 8px;
+            transition: all 0.2s ease;
         }
 
-        .hero-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(255,255,255,0.2);
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 60px 20px;
+            text-align: center;
+            color: white;
         }
 
-        /* Section Title */
-        .section-title {
-            font-size: 32px;
-            color: var(--text-main);
-            margin: 50px 0 30px 0;
+        .hero h1 {
+            font-size: 36px;
             font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: #94a3b8;
+            max-width: 500px;
+            margin: 0 auto 24px;
+        }
+
+        /* Categories */
+        .categories-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .section-title i {
-            color: #f59e0b;
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 16px;
         }
 
-        /* Best Sellers Grid */
+        .category-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            text-decoration: none;
+            color: var(--dark);
+        }
+
+        .category-card:hover, .category-card.active {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .category-card i {
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .category-card span {
+            font-size: 14px;
+            font-weight: 600;
+            display: block;
+        }
+
+        /* Products */
+        .products-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-            margin-bottom: 60px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
         }
 
         .product-card {
-            background: var(--card-background);
+            background: var(--card-bg);
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.02);
-            border: 1px solid rgba(226, 232, 240, 0.7);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
             position: relative;
-            animation: fadeIn 0.6s ease;
         }
 
         .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 35px rgba(0,0,0,0.08);
-            border-color: rgba(59, 130, 246, 0.2);
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
         }
 
         .product-image {
-            width: 100%;
-            height: 220px;
-            background: #f1f5f9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             position: relative;
+            height: 200px;
             overflow: hidden;
         }
 
@@ -330,637 +273,471 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
+            transition: transform 0.3s ease;
         }
 
         .product-card:hover .product-image img {
-            transform: scale(1.08);
+            transform: scale(1.05);
         }
 
-        .product-image-fallback {
-            font-size: 50px;
-            color: var(--primary-color);
-            animation: float 3s infinite ease-in-out;
-        }
-
-        .favorite-btn {
+        .product-fav {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            background: white;
-            border: none;
-            width: 40px;
-            height: 40px;
+            top: 12px;
+            left: 12px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            cursor: pointer;
-            font-size: 16px;
+            border: none;
+            background: white;
+            color: var(--gray-light);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            color: #cbd5e1;
-            z-index: 10;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        .favorite-btn:hover {
-            transform: scale(1.1);
+        .product-fav:hover, .product-fav.active {
+            background: var(--danger);
+            color: white;
         }
 
-        .favorite-btn.favorited {
-            color: var(--danger-color);
+        .product-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--success);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
         }
 
         .product-info {
-            padding: 24px;
+            padding: 16px;
+        }
+
+        .product-category {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 6px;
         }
 
         .product-name {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
-            color: var(--text-main);
             margin-bottom: 8px;
+            line-height: 1.4;
         }
 
         .product-desc {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 16px;
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 12px;
             line-height: 1.5;
-            height: 42px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        .product-meta {
+        .product-footer {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            justify-content: space-between;
         }
 
         .product-price {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
-            color: var(--primary-color);
+            color: var(--primary);
         }
 
-        .product-stock {
+        .product-price span {
             font-size: 13px;
-            background: #f1f5f9;
-            padding: 4px 10px;
-            border-radius: 20px;
-            color: var(--text-muted);
-            font-weight: 600;
+            color: var(--gray);
+            font-weight: 500;
         }
 
         .add-to-cart {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
+            width: 40px;
+            height: 40px;
             border-radius: 12px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 15px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            font-family: 'Cairo', sans-serif;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s ease;
         }
 
         .add-to-cart:hover {
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
-            transform: translateY(-2px);
-        }
-
-        /* Stats Section */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 25px;
-            margin: 60px 0;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 30px 20px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.02);
-            border: 1px solid rgba(226, 232, 240, 0.7);
-            transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-icon {
-            font-size: 36px;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stat-number {
-            font-size: 36px;
-            font-weight: 800;
-            color: var(--text-main);
-            margin-bottom: 6px;
-        }
-
-        .stat-label {
-            color: var(--text-muted);
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        /* Modern Footer (Location & Contact Section) */
-        footer {
-            background: #0f172a;
-            color: #f8fafc;
-            padding: 60px 0 30px 0;
-            margin-top: 80px;
-            border-top-right-radius: 30px;
-            border-top-left-radius: 30px;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-
-        .footer-info .footer-logo {
-            height: 60px;
-            margin-bottom: 20px;
-        }
-
-        .footer-info p {
-            color: #94a3b8;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .footer-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            position: relative;
-            padding-bottom: 10px;
-        }
-
-        .footer-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 40px;
-            height: 3px;
-            background: var(--primary-color);
-            border-radius: 2px;
-        }
-
-        .footer-links-list {
-            list-style: none;
-        }
-
-        .footer-links-list li {
-            margin-bottom: 12px;
-        }
-
-        .footer-links-list a {
-            color: #94a3b8;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-
-        .footer-links-list a:hover {
-            color: white;
-            padding-right: 8px;
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            color: #94a3b8;
-            font-size: 14px;
-        }
-
-        .contact-item i {
-            color: var(--primary-color);
-            font-size: 18px;
-            width: 24px;
-            text-align: center;
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .social-btn {
-            width: 38px;
-            height: 38px;
-            background: #1e293b;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .social-btn:hover {
-            background: var(--primary-color);
             transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
-        .footer-bottom {
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 40px 20px;
             text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid #1e293b;
-            color: #64748b;
-            font-size: 13px;
         }
 
-        /* Loader */
-        .loader-container {
-            grid-column: 1 / -1;
-            display: flex;
-            justify-content: center;
-            padding: 50px 0;
+        .footer-logo {
+            height: 50px;
+            margin-bottom: 16px;
         }
 
-        .loader {
-            width: 45px;
-            height: 45px;
-            border: 4px solid #e2e8f0;
-            border-top: 4px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .footer p {
+            color: var(--gray-light);
+            font-size: 14px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-muted);
-            grid-column: 1 / -1;
-            font-size: 16px;
-        }
-
-        /* Custom Alert */
-        .alert {
+        /* Toast */
+        .toast-container {
             position: fixed;
-            top: 90px;
-            left: 20px;
-            background: white;
-            padding: 16px 24px;
+            bottom: 24px;
+            left: 24px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--dark);
+            color: white;
+            padding: 14px 20px;
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            z-index: 999;
             display: flex;
             align-items: center;
             gap: 12px;
-            font-weight: 600;
-            border-right: 4px solid #10b981;
-            animation: slideLeft 0.3s ease forwards;
+            box-shadow: var(--shadow-lg);
+            animation: toastIn 0.3s ease;
+            min-width: 280px;
         }
 
-        @keyframes slideLeft {
-            from { opacity: 0; transform: translateX(-30px); }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-20px); }
             to { opacity: 1; transform: translateX(0); }
         }
 
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            nav { padding: 15px 20px; }
-            .hero h1 { font-size: 38px; }
+        .toast.success { border-right: 4px solid var(--success); }
+        .toast.error { border-right: 4px solid var(--danger); }
+
+        /* Loading */
+        .loading-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
         }
 
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 20px;
+            height: 320px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Mobile */
         @media (max-width: 768px) {
-            nav { flex-direction: column; gap: 15px; text-align: center; }
-            .nav-right-side { flex-direction: column; gap: 10px; }
-            .nav-links { gap: 10px; }
-            .hero { padding: 60px 20px; }
-            .hero h1 { font-size: 32px; }
-            .products-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+            .header-inner { flex-wrap: wrap; }
+            .search-bar { order: 3; max-width: 100%; width: 100%; }
+            .hero h1 { font-size: 24px; }
+            .products-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
 
-    <nav>
-        <div class="nav-right-side">
-            <a href="index.html" class="logo-container">
-                <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop Logo" class="logo-img">
+    <header class="header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop">
             </a>
-            <ul class="nav-links">
-                <li><a href="index.html" class="active">الرئيسية</a></li>
-                <li><a href="shop.html">المتجر</a></li>
-                <li><a href="my-orders.html">طلباتي</a></li>
-            </ul>
-        </div>
-        
-        <div class="nav-auth-side">
-            <div id="authButtons" style="display: flex; gap: 10px;">
-                <a href="login.html" class="btn-auth btn-login">تسجيل الدخول</a>
-                <a href="register.html" class="btn-auth btn-signup">إنشاء حساب</a>
-            </div>
-            
-            <div class="user-menu" id="userMenu">
-                <div class="user-avatar" id="userAvatar" onclick="toggleDropdown()">?</div>
-                <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="my-orders.html"><i class="fas fa-box"></i> طلباتي</a>
-                    <a href="index.html?favorites=true"><i class="fas fa-heart"></i> المفضلة</a>
-                    <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
-                </div>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container">
-        <div class="hero">
-            <h1>أجود الأطعمة المجمدة واللحوم</h1>
-            <p>اختر من بين تشكيلة واسعة من المنتجات الطازجة والمجمدة بأفضل الأسعار وتوصيل سريع</p>
-            <a href="shop.html" class="hero-btn">
-                <i class="fas fa-shopping-basket"></i> تسوق الآن
-            </a>
-        </div>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="ابحث عن منتج..." oninput="searchProducts()">
+            </div>
 
-        <h2 class="section-title"><i class="fas fa-star"></i> الأكثر مبيعاً</h2>
-        <div id="bestSellers" class="products-grid">
-            <div class="loader-container">
-                <div class="loader"></div>
+            <div class="header-actions">
+                <a href="favorites.html" class="header-btn" title="المفضلة">
+                    <i class="fas fa-heart"></i>
+                    <span class="badge" id="favBadge" style="display:none;">0</span>
+                </a>
+                <a href="cart.html" class="header-btn" title="السلة">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge" id="cartBadge" style="display:none;">0</span>
+                </a>
+                <a href="orders.html" class="header-btn" title="طلباتي">
+                    <i class="fas fa-clipboard-list"></i>
+                </a>
+                <a href="login.html" class="login-btn" id="authBtn">
+                    <i class="fas fa-user"></i>
+                    <span id="authText">تسجيل الدخول</span>
+                </a>
             </div>
         </div>
+    </header>
 
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-cubes"></i></div>
-                <div class="stat-number" id="statsProducts">0</div>
-                <div class="stat-label">منتج متاح بجودة عالية</div>
+    <section class="hero">
+        <h1>🧊 أشهى الأطعمة المجمدة</h1>
+        <p>جودة عالية، توصيل سريع، وأسعار ممتازة. اطلب الآن واستمتع بطعم لا مثيل له!</p>
+    </section>
+
+    <section class="categories-section">
+        <h2 class="section-title"><i class="fas fa-th-large" style="color:var(--primary)"></i> الفئات</h2>
+        <div class="categories-grid" id="categoriesGrid">
+            <div class="category-card active" onclick="filterCategory('all')">
+                <i class="fas fa-border-all"></i>
+                <span>الكل</span>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-users"></i></div>
-                <div class="stat-number" id="statsCustomers">1500+</div>
-                <div class="stat-label">عميل سعيد ومستمر</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-shipping-fast"></i></div>
-                <div class="stat-number"><i class="fas fa-bolt" style="color: #f59e0b;"></i></div>
-                <div class="stat-label">شحن وتوصيل فائق السرعة</div>
-            </div>
+            <!-- Categories loaded dynamically -->
         </div>
-    </div>
+    </section>
 
-    <footer>
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-info">
-                    <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop Logo" class="footer-logo">
-                    <p>متجر متخصص في توفير أفضل الأغذية المجمدة، الأسماك، الدواجن والخضروات بأعلى معايير الحفظ والتبريد لضمان الجودة والسلامة.</p>
-                    <div class="social-icons">
-                        <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-btn"><i class="fab fa-whatsapp"></i></a>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="footer-title">روابط سريعة</h3>
-                    <ul class="footer-links-list">
-                        <li><a href="index.html">الصفحة الرئيسية</a></li>
-                        <li><a href="shop.html">تصفح المتجر</a></li>
-                        <li><a href="my-orders.html">متابعة الطلبات</a></li>
-                        <li><a href="index.html?favorites=true">قائمة المفضلة</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="footer-title">تواصل معنا وموقعنا</h3>
-                    <div class="contact-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>الفرع الرئيسي: القاهرة، جمهورية مصر العربية</span>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-phone-alt"></i>
-                        <span>01000000000</span>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <span>support@frozenshop.com</span>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-clock"></i>
-                        <span>كل يوم من 9:00 صباحاً حتى 10:00 مساءً</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2026 متجر FrozenShop. جميع الحقوق محفوظة.</p>
-            </div>
+    <section class="products-section">
+        <h2 class="section-title"><i class="fas fa-fire" style="color:var(--danger)"></i> المنتجات</h2>
+        <div class="products-grid" id="productsGrid">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
         </div>
+    </section>
+
+    <footer class="footer">
+        <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop" class="footer-logo">
+        <p>© 2026 FrozenShop - جميع الحقوق محفوظة</p>
     </footer>
+
+    <div class="toast-container" id="toastContainer"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = 'https://ufmzgobtjtetrxvewvxl.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_DEZTCSDOUIcSzs_t0tOAqA_HVOdy8As';
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let currentUser = null;
+        let allProducts = [];
+        let allCategories = [];
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        let currentCategory = 'all';
 
-        // Initialize App
-        window.addEventListener('load', () => {
+        async function init() {
             checkAuth();
-            loadBestSellers();
-            loadStats();
-        });
+            await loadCategories();
+            await loadProducts();
+            updateBadges();
+        }
 
-        // Check Authentication and Swap UI elements dynamically
         function checkAuth() {
-            const user = localStorage.getItem('user');
-            const authButtons = document.getElementById('authButtons');
-            const userMenu = document.getElementById('userMenu');
-
-            if (user) {
-                currentUser = JSON.parse(user);
-                authButtons.style.display = 'none';
-                userMenu.style.display = 'flex';
-                updateUserUI();
-            } else {
-                authButtons.style.display = 'flex';
-                userMenu.style.display = 'none';
-                showLoginPrompt();
+            const savedUser = localStorage.getItem('user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                document.getElementById('authBtn').href = 'orders.html';
+                document.getElementById('authText').textContent = currentUser.name || 'حسابي';
             }
         }
 
-        function updateUserUI() {
-            const avatar = document.getElementById('userAvatar');
-            if (currentUser && currentUser.name) {
-                const initials = currentUser.name.substring(0, 2).toUpperCase();
-                avatar.textContent = initials;
-            }
-        }
-
-        function showLoginPrompt() {
-            const alreadyShown = sessionStorage.getItem('loginPromptShown');
-            if (!alreadyShown) {
-                const go = confirm('يرجى تسجيل الدخول أولاً للمتابعة والاستفادة من كامل الميزات.');
-                if (go) {
-                    window.location.href = 'login.html';
-                }
-                sessionStorage.setItem('loginPromptShown', 'true');
-            }
-        }
-
-        // Profile Dropdown Actions
-        function toggleDropdown() {
-            const menu = document.getElementById('dropdownMenu');
-            menu.classList.toggle('show');
-        }
-
-        document.addEventListener('click', (e) => {
-            const menu = document.getElementById('dropdownMenu');
-            if (!e.target.closest('.user-menu')) {
-                menu.classList.remove('show');
-            }
-        });
-
-        // Load Products from Supabase Table
-        async function loadBestSellers() {
+        async function loadCategories() {
             try {
-                const { data, error } = await supabase
-                    .from('products')
-                    .select('*')
-                    .order('created_at', { ascending: false })
-                    .limit(8);
-
+                const { data, error } = await supabase.from('categories').select('*');
                 if (error) throw error;
+                allCategories = data || [];
+                renderCategories();
+            } catch (err) {
+                console.error('Categories error:', err);
+            }
+        }
 
-                const container = document.getElementById('bestSellers');
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<div class="empty-state">لا توجد منتجات معروضة حالياً في جدول المنتجات.</div>';
-                    return;
-                }
+        function renderCategories() {
+            const grid = document.getElementById('categoriesGrid');
+            const catsHtml = allCategories.map(c => `
+                <div class="category-card" onclick="filterCategory('${c.name}')">
+                    <i class="${c.icon || 'fas fa-tag'}"></i>
+                    <span>${c.name}</span>
+                </div>
+            `).join('');
+            grid.innerHTML = `
+                <div class="category-card active" onclick="filterCategory('all')">
+                    <i class="fas fa-border-all"></i>
+                    <span>الكل</span>
+                </div>
+                ${catsHtml}
+            `;
+        }
 
-                container.innerHTML = data.map(product => `
-                    <div class="product-card">
+        async function loadProducts() {
+            try {
+                const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+                allProducts = data || [];
+                renderProducts();
+            } catch (err) {
+                console.error('Products error:', err);
+                document.getElementById('productsGrid').innerHTML = `
+                    <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray)">
+                        <i class="fas fa-exclamation-circle" style="font-size:48px;margin-bottom:16px"></i>
+                        <h3>خطأ في تحميل المنتجات</h3>
+                        <p>${err.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            let filtered = allProducts;
+
+            if (currentCategory !== 'all') {
+                filtered = allProducts.filter(p => p.category === currentCategory);
+            }
+
+            const searchTerm = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+            if (searchTerm) {
+                filtered = filtered.filter(p => 
+                    p.name.toLowerCase().includes(searchTerm) ||
+                    (p.description && p.description.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray)">
+                        <i class="fas fa-search" style="font-size:48px;margin-bottom:16px;opacity:0.5"></i>
+                        <h3>لا توجد منتجات</h3>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => {
+                const isFav = favorites.includes(p.id);
+                return `
+                    <div class="product-card" onclick="viewProduct(${p.id})">
                         <div class="product-image">
-                            ${product.image_url ? `<img src="${product.image_url}" alt="${product.name}">` : '<i class="fas fa-snowflake product-image-fallback"></i>'}
-                            <button class="favorite-btn ${isFavorited(product.id) ? 'favorited' : ''}" 
-                                    onclick="toggleFavorite(event, ${product.id})">
-                                <i class="${isFavorited(product.id) ? 'fas' : 'far'} fa-heart"></i>
+                            <img src="${p.image_url || 'https://via.placeholder.com/300x200'}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300x200'">
+                            <button class="product-fav ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite(${p.id})" title="المفضلة">
+                                <i class="fas fa-heart"></i>
                             </button>
+                            ${p.stock <= 5 ? '<span class="product-badge"> quantities remaining</span>' : ''}
                         </div>
                         <div class="product-info">
-                            <div class="product-name">${product.name}</div>
-                            <div class="product-desc">${product.description || 'منتج طازج ومحفوظ بأعلى جودة تبريد'}</div>
-                            <div class="product-meta">
-                                <div class="product-price">${product.price} ج.م</div>
-                                <div class="product-stock">المخزون: ${product.stock}</div>
+                            <div class="product-category">${p.category || 'عام'}</div>
+                            <div class="product-name">${p.name}</div>
+                            <div class="product-desc">${p.description || ''}</div>
+                            <div class="product-footer">
+                                <div class="product-price">${p.price?.toFixed(2) || '0.00'} <span>ج.م</span></div>
+                                <button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${p.id})" title="أضف للسلة">
+                                    <i class="fas fa-plus"></i>
+                                </button>
                             </div>
-                            <button class="add-to-cart" onclick="addToCart(${product.id}, '${product.name}', ${product.price})">
-                                <i class="fas fa-cart-plus"></i> أضف للسلة
-                            </button>
                         </div>
                     </div>
-                `).join('');
+                `;
+            }).join('');
+        }
 
-            } catch (err) {
-                console.error('Error loading products:', err);
-                document.getElementById('bestSellers').innerHTML = '<div class="empty-state">حدث خطأ أثناء تحميل جدول المنتجات من Supabase.</div>';
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            renderProducts();
+        }
+
+        function searchProducts() {
+            renderProducts();
+        }
+
+        function viewProduct(productId) {
+            if (!currentUser) {
+                showToast('يرجى تسجيل الدخول أولاً لعرض تفاصيل المنتج', 'error');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+                return;
             }
+            window.location.href = `product-detail.html?id=${productId}`;
         }
 
-        // Favorites Handling via localStorage
-        function isFavorited(productId) {
-            const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-            return favorites.includes(productId);
-        }
-
-        function toggleFavorite(e, productId) {
-            e.stopPropagation();
-            let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-            
-            if (favorites.includes(productId)) {
-                favorites = favorites.filter(id => id !== productId);
-                showAlert('<i class="fas fa-heart-broken" style="color: #ef4444;"></i> تم الإزالة من المفضلة');
+        function toggleFavorite(productId) {
+            if (!currentUser) {
+                showToast('يرجى تسجيل الدخول أولاً', 'error');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+                return;
+            }
+            const idx = favorites.indexOf(productId);
+            if (idx > -1) {
+                favorites.splice(idx, 1);
+                showToast('تم الإزالة من المفضلة', 'success');
             } else {
                 favorites.push(productId);
-                showAlert('<i class="fas fa-heart" style="color: #ef4444;"></i> تم الإضافة للمفضلة');
+                showToast('تم الإضافة للمفضلة', 'success');
             }
-            
             localStorage.setItem('favorites', JSON.stringify(favorites));
-            loadBestSellers();
+            renderProducts();
+            updateBadges();
         }
 
-        // Add Items to Cart via localStorage
-        function addToCart(productId, productName, price) {
-            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            const exists = cart.find(item => item.id === productId);
-            
-            if (exists) {
-                exists.quantity += 1;
+        function addToCart(productId) {
+            if (!currentUser) {
+                showToast('يرجى تسجيل الدخول أولاً', 'error');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+                return;
+            }
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            const existing = cart.find(item => item.id === productId);
+            if (existing) {
+                existing.qty += 1;
             } else {
-                cart.push({ id: productId, name: productName, price, quantity: 1 });
+                cart.push({ id: productId, qty: 1, ...product });
             }
-            
             localStorage.setItem('cart', JSON.stringify(cart));
-            showAlert('<i class="fas fa-shopping-cart" style="color: #10b981;"></i> تم إضافة المنتج بنجاح للسلة');
+            showToast('تم الإضافة للسلة', 'success');
+            updateBadges();
         }
 
-        // Load Stats Metrics
-        async function loadStats() {
-            try {
-                const { count } = await supabase
-                    .from('products')
-                    .select('*', { count: 'exact', head: true });
+        function updateBadges() {
+            const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+            const cartBadge = document.getElementById('cartBadge');
+            if (cartCount > 0) { cartBadge.textContent = cartCount; cartBadge.style.display = 'flex'; }
+            else { cartBadge.style.display = 'none'; }
 
-                document.getElementById('statsProducts').textContent = count || 0;
-            } catch (err) {
-                console.error('Error fetching statistics:', err);
-            }
+            const favBadge = document.getElementById('favBadge');
+            if (favorites.length > 0) { favBadge.textContent = favorites.length; favBadge.style.display = 'flex'; }
+            else { favBadge.style.display = 'none'; }
         }
 
-        // Authentication Logout
-        function logout() {
-            localStorage.removeItem('user');
-            currentUser = null;
-            window.location.href = 'login.html';
+        function showToast(message, type) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        // Modern Customized Alert Notification
-        function showAlert(message) {
-            const existingAlert = document.querySelector('.alert');
-            if (existingAlert) existingAlert.remove();
-
-            const alert = document.createElement('div');
-            alert.className = 'alert';
-            alert.innerHTML = message;
-            document.body.appendChild(alert);
-            setTimeout(() => alert.remove(), 3000);
-        }
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
