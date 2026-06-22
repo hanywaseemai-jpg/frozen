@@ -12,6 +12,7 @@
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            --background-color: #0f172a;
             --card-background: #ffffff;
             --text-main: #1e293b;
             --text-muted: #64748b;
@@ -33,12 +34,6 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            overflow-x: hidden;
-        }
-
-        @keyframes containerSpawn {
-            from { opacity: 0; transform: translateY(30px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .signup-container {
@@ -48,7 +43,7 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             max-width: 450px;
             width: 100%;
-            animation: containerSpawn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            position: relative;
         }
 
         .logo-wrapper {
@@ -105,7 +100,7 @@
 
         input {
             width: 100%;
-            padding: 13px 45px 13px 15px;
+            padding: 13px 45px 13px 15px; /* مسافة لعدم تداخل النص مع الأيقونة */
             border: 2px solid var(--border-color);
             border-radius: 12px;
             font-size: 14px;
@@ -136,7 +131,7 @@
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             font-family: 'Cairo', sans-serif;
             display: flex;
             align-items: center;
@@ -168,14 +163,12 @@
             color: var(--accent-color);
             text-decoration: none;
             font-weight: 700;
-            transition: all 0.3s ease;
         }
 
         .login-link a:hover {
             text-decoration: underline;
         }
 
-        /* Modern Alert styling */
         .alert {
             padding: 14px;
             border-radius: 12px;
@@ -232,7 +225,7 @@
             <div class="form-group">
                 <label>الاسم الكامل</label>
                 <div class="input-icon-wrapper">
-                    <input type="text" id="fullName" required placeholder="جون دو">
+                    <input type="text" id="fullName" required placeholder="الاسم الثنائي أو الثلاثي">
                     <i class="fas fa-user"></i>
                 </div>
             </div>
@@ -273,6 +266,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // تعريف نظيف وواحد فقط بدون أي تكرار
         const SUPABASE_URL = 'https://ufmzgobtjtetrxvewvxl.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_DEZTCSDOUIcSzs_t0tOAqA_HVOdy8As';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -286,7 +280,7 @@
             const btn = document.getElementById('submitBtn');
             const alertBox = document.getElementById('alertBox');
 
-            // Reset UI status
+            // إعادة تهيئة التنبيهات
             alertBox.style.display = 'none';
             alertBox.className = 'alert';
 
@@ -301,7 +295,7 @@
                 btn.disabled = true;
                 btn.innerHTML = '<span class="loader"></span> جاري إنشاء الحساب...';
 
-                // تسجيل الحساب رسمياً في نظام Supabase Authentication مضافاً إليه معلومات المستخدم الإضافية كـ Metadata
+                // تسجيل المستخدم في نظام سوبابيز
                 const { data, error } = await supabase.auth.signUp({
                     email: email,
                     password: password,
@@ -318,6 +312,7 @@
                 alertBox.classList.add('alert-success');
                 alertBox.style.display = 'flex';
 
+                // التوجيه لصفحة تسجيل الدخول ليدخل منها بشكل رسمي وآمن
                 setTimeout(() => {
                     window.location.href = 'login.html';
                 }, 2000);
