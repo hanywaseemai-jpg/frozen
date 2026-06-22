@@ -48,7 +48,7 @@
         .form-group { margin-bottom: 22px; position: relative; }
         label { display: block; margin-bottom: 8px; color: var(--text-main); font-weight: 700; font-size: 14px; }
         .input-icon-wrapper { position: relative; }
-        
+
         .input-icon-wrapper i {
             position: absolute;
             top: 50%;
@@ -121,6 +121,7 @@
         .loader { width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -128,7 +129,7 @@
         <div class="logo-wrapper">
             <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop Logo" class="logo-img">
         </div>
-        
+
         <h1>تسجيل الدخول</h1>
         <p class="subtitle">أهلاً بك مجدداً في متجر الأطعمة المجمدة</p>
 
@@ -170,10 +171,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // تعريف واحد وصريح بدون أي تكرار نهائياً في الملف
         const SUPABASE_URL = 'https://ufmzgobtjtetrxvewvxl.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_DEZTCSDOUIcSzs_t0tOAqA_HVOdy8As';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // استخدم var بدل const عشان لو supabase متعرف قبل كده (من الـ CDN) مايحصلش SyntaxError
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         window.addEventListener('load', () => {
             const savedUser = localStorage.getItem('user');
