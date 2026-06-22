@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طلباتي - FrozenShop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--dark); min-height: 100vh; }
+
+        .header {
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo img { height: 45px; }
+        .back-btn {
+            width: 42px; height: 42px;
+            border-radius: 12px; border: none;
+            background: var(--bg); color: var(--dark);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 18px; text-decoration: none;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .order-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+        }
+        .order-card:hover { box-shadow: var(--shadow-lg); }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-id {
+            font-family: monospace;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .order-status {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .order-status::before {
+            content: '';
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-pending::before { background: var(--warning); }
+        .status-processing { background: #dbeafe; color: #1e40af; }
+        .status-processing::before { background: var(--info); }
+        .status-delivered { background: #d1fae5; color: #065f46; }
+        .status-delivered::before { background: var(--success); }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+        .status-cancelled::before { background: var(--danger); }
+
+        .order-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: var(--bg);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        .order-item-name { font-weight: 600; }
+        .order-item-qty { color: var(--gray); }
+        .order-item-price { font-weight: 700; color: var(--primary); }
+
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+        .order-total {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .order-date {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 100px 20px;
+            color: var(--gray);
+        }
+        .empty-state i { font-size: 64px; margin-bottom: 20px; opacity: 0.5; }
+        .empty-state h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--dark); }
+        .empty-state a {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 12px 28px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            background: var(--dark);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow-lg);
+            animation: toastIn 0.3s ease;
+            min-width: 280px;
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .toast.error { border-right: 4px solid var(--danger); }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop">
+            </a>
+            <a href="index.html" class="back-btn"><i class="fas fa-arrow-right"></i></a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title"><i class="fas fa-clipboard-list" style="color:var(--primary)"></i> طلباتي</h1>
+        <div id="ordersList">
+            <div class="empty-state">
+                <i class="fas fa-spinner fa-spin"></i>
+                <h3>جاري التحميل...</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://ufmzgobtjtetrxvewvxl.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_DEZTCSDOUIcSzs_t0tOAqA_HVOdy8As';
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentUser = null;
+
+        async function init() {
+            const savedUser = localStorage.getItem('user');
+            if (!savedUser) {
+                showToast('يرجى تسجيل الدخول أولاً', 'error');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+                return;
+            }
+            currentUser = JSON.parse(savedUser);
+            await loadOrders();
+        }
+
+        async function loadOrders() {
+            try {
+                // Try RPC first, fallback to direct query
+                let data, error;
+                try {
+                    const result = await supabase.rpc('get_all_orders');
+                    data = result.data;
+                    error = result.error;
+                } catch (e) {
+                    const result = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+                    data = result.data;
+                    error = result.error;
+                }
+
+                if (error) throw error;
+
+                // Filter orders by current user's email
+                const userOrders = (data || []).filter(o => o.customer_email === currentUser.email);
+                renderOrders(userOrders);
+            } catch (err) {
+                showToast('خطأ في التحميل: ' + err.message, 'error');
+                document.getElementById('ordersList').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>خطأ في تحميل الطلبات</h3>
+                        <p>${err.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderOrders(orders) {
+            const container = document.getElementById('ordersList');
+
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>لا توجد طلبات</h3>
+                        <p>لم تقم بأي طلبات حتى الآن</p>
+                        <a href="index.html">تصفح المنتجات</a>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = orders.map(order => {
+                let items = [];
+                try {
+                    items = typeof order.items === 'string' ? JSON.parse(order.items) : (order.items || []);
+                } catch(e) { items = []; }
+
+                const itemsHtml = items.length > 0 ? items.map(item => `
+                    <div class="order-item">
+                        <span class="order-item-name">${item.name}</span>
+                        <span class="order-item-qty">x${item.qty}</span>
+                        <span class="order-item-price">${(item.price * item.qty).toFixed(2)} ج.م</span>
+                    </div>
+                `).join('') : '<div class="order-item"><span class="order-item-name">-</span></div>';
+
+                return `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <span class="order-id">#${order.id}</span>
+                            <span class="order-status status-${order.status}">${getStatusText(order.status)}</span>
+                        </div>
+                        <div class="order-items">
+                            ${itemsHtml}
+                        </div>
+                        <div class="order-footer">
+                            <span class="order-date">${formatDate(order.created_at)}</span>
+                            <span class="order-total">${order.total_price?.toFixed(2) || '0.00'} ج.م</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getStatusText(status) {
+            const map = { 'pending': 'قيد الانتظار', 'processing': 'قيد التجهيز', 'delivered': 'تم التوصيل', 'cancelled': 'ملغي' };
+            return map[status] || status;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        function showToast(message, type) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas fa-exclamation-circle"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
