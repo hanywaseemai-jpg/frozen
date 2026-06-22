@@ -36,7 +36,6 @@
             min-height: 100vh;
         }
 
-        /* Header */
         .header {
             background: var(--card-bg);
             box-shadow: var(--shadow);
@@ -65,12 +64,6 @@
         .logo img {
             height: 45px;
             object-fit: contain;
-        }
-
-        .logo-text {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--primary);
         }
 
         .search-bar {
@@ -106,7 +99,7 @@
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
 
         .header-btn {
@@ -144,6 +137,12 @@
             font-weight: 700;
         }
 
+        .auth-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .login-btn {
             padding: 10px 20px;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -162,6 +161,31 @@
         }
 
         .login-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+
+        .logout-btn {
+            padding: 10px 16px;
+            background: #fee2e2;
+            color: var(--danger);
+            border: none;
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover { background: var(--danger); color: white; }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dark);
+            display: none;
+        }
 
         /* Hero */
         .hero {
@@ -459,6 +483,8 @@
             .search-bar { order: 3; max-width: 100%; width: 100%; }
             .hero h1 { font-size: 24px; }
             .products-grid { grid-template-columns: repeat(2, 1fr); }
+            .auth-section { gap: 4px; }
+            .user-name { display: none !important; }
         }
     </style>
 <base target="_blank">
@@ -488,10 +514,17 @@
                 <a href="orders.html" class="header-btn" title="طلباتي">
                     <i class="fas fa-clipboard-list"></i>
                 </a>
-                <a href="login.html" class="login-btn" id="authBtn">
-                    <i class="fas fa-user"></i>
-                    <span id="authText">تسجيل الدخول</span>
-                </a>
+                <div class="auth-section">
+                    <span class="user-name" id="userNameDisplay"></span>
+                    <a href="login.html" class="login-btn" id="loginBtn">
+                        <i class="fas fa-user"></i>
+                        <span>دخول</span>
+                    </a>
+                    <button class="logout-btn" id="logoutBtn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>خروج</span>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -508,7 +541,6 @@
                 <i class="fas fa-border-all"></i>
                 <span>الكل</span>
             </div>
-            <!-- Categories loaded dynamically -->
         </div>
     </section>
 
@@ -551,11 +583,30 @@
 
         function checkAuth() {
             const savedUser = localStorage.getItem('user');
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const userNameDisplay = document.getElementById('userNameDisplay');
+
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
-                document.getElementById('authBtn').href = 'orders.html';
-                document.getElementById('authText').textContent = currentUser.name || 'حسابي';
+                loginBtn.style.display = 'none';
+                logoutBtn.style.display = 'inline-flex';
+                userNameDisplay.style.display = 'inline';
+                userNameDisplay.textContent = currentUser.name || currentUser.email?.split('@')[0] || 'مستخدم';
+            } else {
+                loginBtn.style.display = 'inline-flex';
+                logoutBtn.style.display = 'none';
+                userNameDisplay.style.display = 'none';
             }
+        }
+
+        function logout() {
+            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+            localStorage.removeItem('user');
+            localStorage.removeItem('rememberMe');
+            localStorage.removeItem('cart');
+            localStorage.removeItem('favorites');
+            window.location.reload();
         }
 
         async function loadCategories() {
