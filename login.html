@@ -20,11 +20,7 @@
             --primary-color: #2563eb;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Cairo', sans-serif;
@@ -43,52 +39,16 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             max-width: 430px;
             width: 100%;
-            position: relative;
         }
 
-        .logo-wrapper {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .logo-img {
-            height: 65px;
-            object-fit: contain;
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--text-main);
-            font-size: 26px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: var(--text-muted);
-            margin-bottom: 30px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .form-group {
-            margin-bottom: 22px;
-            position: relative;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-main);
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .input-icon-wrapper {
-            position: relative;
-        }
-
+        .logo-wrapper { text-align: center; margin-bottom: 25px; }
+        .logo-img { height: 65px; object-fit: contain; }
+        h1 { text-align: center; color: var(--text-main); font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+        .subtitle { text-align: center; color: var(--text-muted); margin-bottom: 30px; font-size: 14px; font-weight: 600; }
+        .form-group { margin-bottom: 22px; position: relative; }
+        label { display: block; margin-bottom: 8px; color: var(--text-main); font-weight: 700; font-size: 14px; }
+        .input-icon-wrapper { position: relative; }
+        
         .input-icon-wrapper i {
             position: absolute;
             top: 50%;
@@ -96,12 +56,11 @@
             transform: translateY(-50%);
             color: var(--text-muted);
             font-size: 16px;
-            transition: color 0.3s ease;
         }
 
         input {
             width: 100%;
-            padding: 14px 45px 14px 15px; /* مسافة لعدم تداخل النص مع الأيقونة على اليمين */
+            padding: 14px 45px 14px 15px;
             border: 2px solid var(--border-color);
             border-radius: 12px;
             font-size: 14px;
@@ -118,30 +77,9 @@
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
 
-        input:focus + i {
-            color: var(--primary-color);
-        }
-
-        .remember-forgot {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .remember {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            color: var(--text-main);
-        }
-
-        .remember input {
-            width: auto;
-            cursor: pointer;
-        }
+        .remember-forgot { margin-bottom: 25px; font-size: 14px; font-weight: 600; }
+        .remember { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-main); }
+        .remember input { width: auto; cursor: pointer; }
 
         .btn {
             width: 100%;
@@ -162,33 +100,11 @@
             box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
-        }
-
-        .btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        .signup-link {
-            text-align: center;
-            margin-top: 25px;
-            color: var(--text-muted);
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .signup-link a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 700;
-        }
-
-        .signup-link a:hover {
-            text-decoration: underline;
-        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .signup-link { text-align: center; margin-top: 25px; color: var(--text-muted); font-size: 14px; font-weight: 600; }
+        .signup-link a { color: var(--primary-color); text-decoration: none; font-weight: 700; }
+        .signup-link a:hover { text-decoration: underline; }
 
         .alert {
             padding: 14px;
@@ -200,34 +116,10 @@
             align-items: center;
             gap: 10px;
         }
-
-        .alert-error {
-            background: #fef2f2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
-            display: flex;
-        }
-
-        .alert-success {
-            background: #ecfdf5;
-            color: #065f46;
-            border: 1px solid #6ee7b7;
-            display: flex;
-        }
-
-        .loader {
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top: 2px solid white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; display: flex; }
+        .alert-success { background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; display: flex; }
+        .loader { width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -278,47 +170,40 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // تعريف واحد وثابت لـ Supabase بدون تكرار
-        const SUPABASE_URL = 'https://ufmzgobtjtetrxvewvxl.supabase.co'; [cite: 40]
-        const SUPABASE_KEY = 'sb_publishable_DEZTCSDOUIcSzs_t0tOAqA_HVOdy8As'; [cite: 40]
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); [cite: 40]
+        // تعريف واحد وصريح بدون أي تكرار نهائياً في الملف
+        const SUPABASE_URL = 'https://ufmzgobtjtetrxvewvxl.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_DEZTCSDOUIcSzs_t0tOAqA_HVOdy8As';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // التحقق عند تحميل الصفحة إذا كان هناك جلسة نشطة لتوجيهها فوراً
         window.addEventListener('load', () => {
-            const savedUser = localStorage.getItem('user'); [cite: 41]
+            const savedUser = localStorage.getItem('user');
             if (savedUser) {
                 const parsed = JSON.parse(savedUser);
                 if (parsed.email === 'kevin.hany.08@hotmail.com') {
                     window.location.href = 'admin.html';
                 } else {
-                    window.location.href = 'index.html'; [cite: 41]
+                    window.location.href = 'index.html';
                 }
             }
         });
 
         async function handleLogin(e) {
-            e.preventDefault(); [cite: 42]
-            const email = document.getElementById('email').value.trim(); [cite: 42]
-            const password = document.getElementById('password').value; [cite: 42]
-            const btn = document.getElementById('submitBtn'); [cite: 42]
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('submitBtn');
             const alertBox = document.getElementById('alertBox');
 
-            // إعادة تهيئة صندوق التنبيهات
             alertBox.style.display = 'none';
             alertBox.className = 'alert';
 
-            btn.disabled = true; [cite: 42]
-            btn.innerHTML = '<span class="loader"></span> جاري التحقق من الحساب...'; [cite: 42]
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loader"></span> جاري التحقق من الحساب...';
 
             try {
-                if (!email.includes('@')) { [cite: 44]
-                    throw new Error('صيغة البريد الإلكتروني غير صحيحة.'); [cite: 44]
-                }
-                if (password.length < 6) { [cite: 45]
-                    throw new Error('كلمة المرور يجب ألا تقل عن 6 أحرف.'); [cite: 45]
-                }
+                if (!email.includes('@')) throw new Error('صيغة البريد الإلكتروني غير صحيحة.');
+                if (password.length < 6) throw new Error('كلمة المرور يجب ألا تقل عن 6 أحرف.');
 
-                // تنفيذ تسجيل الدخول عبر سوبابيز
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email: email,
                     password: password
@@ -326,39 +211,37 @@
 
                 if (error) throw error;
 
-                // إعداد بيانات الجلسة لحفظها محلياً
                 const sessionUser = {
                     id: data.user.id,
                     email: data.user.email,
-                    name: data.user.user_metadata.full_name || email.split('@')[0], [cite: 46]
-                    joinDate: data.user.created_at [cite: 46]
+                    name: data.user.user_metadata.full_name || email.split('@')[0],
+                    joinDate: data.user.created_at
                 };
 
-                localStorage.setItem('user', JSON.stringify(sessionUser)); [cite: 47]
+                localStorage.setItem('user', JSON.stringify(sessionUser));
 
-                if (document.getElementById('remember').checked) { [cite: 48]
-                    localStorage.setItem('rememberMe', 'true'); [cite: 48]
+                if (document.getElementById('remember').checked) {
+                    localStorage.setItem('rememberMe', 'true');
                 }
 
                 alertBox.innerHTML = '<i class="fas fa-check-circle"></i> تم تسجيل الدخول بنجاح! جاري التوجيه...';
                 alertBox.classList.add('alert-success');
                 alertBox.style.display = 'flex';
 
-                // شرط التوجيه للأدمن بناءً على طلبك
                 setTimeout(() => {
                     if (email.toLowerCase() === 'kevin.hany.08@hotmail.com') {
-                        window.location.href = 'admin.html'; // يوجهك مباشرة لصفحة التحكم
+                        window.location.href = 'admin.html';
                     } else {
-                        window.location.href = 'index.html'; // يوجه باقي الزبائن للمتجر الرئيسي 
+                        window.location.href = 'index.html';
                     }
                 }, 1200);
 
             } catch (err) {
-                alertBox.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${err.message}`; [cite: 51]
+                alertBox.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${err.message}`;
                 alertBox.classList.add('alert-error');
                 alertBox.style.display = 'flex';
-                btn.disabled = false; [cite: 52]
-                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> دخول'; [cite: 52]
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> دخول';
             }
         }
     </script>
