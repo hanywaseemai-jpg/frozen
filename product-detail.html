@@ -43,14 +43,35 @@
         }
         .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
         .logo img { height: 45px; }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .back-btn, .logout-btn {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
         .back-btn {
-            width: 42px; height: 42px;
-            border-radius: 12px; border: none;
-            background: var(--bg); color: var(--dark);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 18px; text-decoration: none;
+            background: var(--bg);
+            color: var(--dark);
         }
         .back-btn:hover { background: var(--primary); color: white; }
+        .logout-btn {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+        .logout-btn:hover { background: var(--danger); color: white; }
 
         .container {
             max-width: 1000px;
@@ -224,7 +245,10 @@
             <a href="index.html" class="logo">
                 <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop">
             </a>
-            <a href="index.html" class="back-btn"><i class="fas fa-arrow-right"></i></a>
+            <div class="header-actions">
+                <a href="index.html" class="back-btn"><i class="fas fa-arrow-right"></i> رجوع</a>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> خروج</button>
+            </div>
         </div>
     </header>
 
@@ -294,6 +318,15 @@
             } catch (err) {
                 showToast('خطأ في تحميل المنتج', 'error');
             }
+        }
+
+        function logout() {
+            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+            localStorage.removeItem('user');
+            localStorage.removeItem('rememberMe');
+            localStorage.removeItem('cart');
+            localStorage.removeItem('favorites');
+            window.location.href = 'index.html';
         }
 
         function renderProduct() {
