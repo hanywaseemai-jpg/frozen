@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>السلة - FrozenShop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--dark); min-height: 100vh; }
+
+        .header {
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo img { height: 45px; }
+        .back-btn {
+            width: 42px; height: 42px;
+            border-radius: 12px; border: none;
+            background: var(--bg); color: var(--dark);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 18px; text-decoration: none;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cart-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+        }
+
+        .cart-items {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .cart-item:last-child { border-bottom: none; }
+
+        .cart-item-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .cart-item-info { flex: 1; }
+        .cart-item-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+        .cart-item-price { color: var(--primary); font-weight: 700; }
+
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .qty-btn {
+            width: 32px; height: 32px;
+            border-radius: 8px; border: 2px solid var(--border);
+            background: white; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; transition: all 0.2s;
+        }
+        .qty-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .qty-value { font-weight: 700; min-width: 24px; text-align: center; }
+
+        .remove-btn {
+            width: 36px; height: 36px;
+            border-radius: 10px; border: none;
+            background: #fee2e2; color: var(--danger);
+            cursor: pointer; display: flex;
+            align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .remove-btn:hover { background: var(--danger); color: white; }
+
+        .cart-summary {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 80px;
+        }
+
+        .summary-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+        .summary-row.total {
+            border-bottom: none;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            padding-top: 16px;
+            border-top: 2px solid var(--border);
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        .checkout-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59,130,246,0.3); }
+        .checkout-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .empty-cart {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--gray);
+        }
+        .empty-cart i { font-size: 64px; margin-bottom: 20px; opacity: 0.5; }
+        .empty-cart h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--dark); }
+        .empty-cart a {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 12px 28px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        /* Checkout Modal */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--card-bg);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .modal-title { font-size: 18px; font-weight: 700; }
+        .modal-close {
+            width: 36px; height: 36px;
+            border-radius: 10px; border: none;
+            background: var(--bg); cursor: pointer;
+            font-size: 16px; color: var(--gray);
+        }
+        .modal-close:hover { background: var(--danger); color: white; }
+        .modal-body { padding: 24px; }
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+        .form-textarea { min-height: 80px; resize: vertical; }
+
+        .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .payment-option:hover { border-color: var(--primary); }
+        .payment-option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        .payment-option input { width: auto; }
+        .payment-option i { font-size: 20px; color: var(--primary); }
+        .payment-option span { font-weight: 600; }
+
+        .location-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--gray);
+            transition: all 0.2s;
+        }
+        .location-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .location-btn.has-location {
+            border-style: solid;
+            border-color: var(--success);
+            color: var(--success);
+            background: #ecfdf5;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            background: var(--dark);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow-lg);
+            animation: toastIn 0.3s ease;
+            min-width: 280px;
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .toast.success { border-right: 4px solid var(--success); }
+        .toast.error { border-right: 4px solid var(--danger); }
+
+        @media (max-width: 768px) {
+            .cart-layout { grid-template-columns: 1fr; }
+            .cart-summary { position: static; }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop">
+            </a>
+            <a href="index.html" class="back-btn"><i class="fas fa-arrow-right"></i></a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title"><i class="fas fa-shopping-cart" style="color:var(--primary)"></i> سلة التسوق</h1>
+
+        <div class="cart-layout" id="cartLayout">
+            <div class="cart-items" id="cartItems">
+                <!-- Items loaded dynamically -->
+            </div>
+
+            <div class="cart-summary" id="cartSummary" style="display:none;">
+                <div class="summary-title">ملخص الطلب</div>
+                <div class="summary-row">
+                    <span>عدد المنتجات</span>
+                    <span id="summaryQty">0</span>
+                </div>
+                <div class="summary-row">
+                    <span>المجموع الفرعي</span>
+                    <span id="summarySubtotal">0.00 ج.م</span>
+                </div>
+                <div class="summary-row">
+                    <span>رسوم التوصيل</span>
+                    <span style="color:var(--success)">مجاني</span>
+                </div>
+                <div class="summary-row total">
+                    <span>الإجمالي</span>
+                    <span id="summaryTotal">0.00 ج.م</span>
+                </div>
+                <button class="checkout-btn" onclick="openCheckout()">
+                    <i class="fas fa-credit-card"></i>
+                    إتمام الطلب
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal-overlay" id="checkoutModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-credit-card" style="color:var(--primary)"></i> إتمام الطلب</div>
+                <button class="modal-close" onclick="closeModal('checkoutModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">الاسم الكامل</label>
+                    <input type="text" class="form-input" id="checkoutName" placeholder="اسمك الثلاثي">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">رقم التليفون *</label>
+                    <input type="tel" class="form-input" id="checkoutPhone" placeholder="01xxxxxxxxx" maxlength="11">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">البريد الإلكتروني</label>
+                    <input type="email" class="form-input" id="checkoutEmail" placeholder="email@example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">العنوان / ملاحظات</label>
+                    <textarea class="form-textarea" id="checkoutAddress" placeholder="تفاصيل العنوان أو أي ملاحظات..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الموقع على الخريطة</label>
+                    <button class="location-btn" id="locationBtn" onclick="openLocation()">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="locationText">اختر موقع التوصيل</span>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">طريقة الدفع</label>
+                    <div class="payment-options">
+                        <label class="payment-option selected" onclick="selectPayment(this, 'cash')">
+                            <input type="radio" name="payment" value="cash" checked>
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>كاش عند الاستلام</span>
+                        </label>
+                        <label class="payment-option" onclick="selectPayment(this, 'instapay')">
+                            <input type="radio" name="payment" value="instapay">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>انستا باي</span>
+                        </label>
+                        <label class="payment-option" onclick="selectPayment(this, 'vodafone')">
+                            <input type="radio" name="payment" value="vodafone">
+                            <i class="fas fa-sim-card"></i>
+                            <span>فودافون كاش</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('checkoutModal')" style="padding:10px 20px;border-radius:10px;border:none;background:var(--bg);font-family:'Cairo';cursor:pointer;">إلغاء</button>
+                <button class="checkout-btn" onclick="submitOrder()" style="margin:0;flex:1;">
+                    <i class="fas fa-check"></i>
+                    تأكيد الطلب
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://ufmzgobtjtetrxvewvxl.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_DEZTCSDOUIcSzs_t0tOAqA_HVOdy8As';
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+        let selectedLocation = JSON.parse(localStorage.getItem('deliveryLocation') || 'null');
+        let selectedPayment = 'cash';
+
+        function init() {
+            if (!currentUser) {
+                showToast('يرجى تسجيل الدخول أولاً', 'error');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+                return;
+            }
+            renderCart();
+            updateLocationButton();
+        }
+
+        function renderCart() {
+            const itemsContainer = document.getElementById('cartItems');
+            const summary = document.getElementById('cartSummary');
+
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-basket"></i>
+                        <h3>السلة فارغة</h3>
+                        <p>ابدأ التسوق واضف منتجاتك المفضلة</p>
+                        <a href="index.html">تصفح المنتجات</a>
+                    </div>
+                `;
+                summary.style.display = 'none';
+                return;
+            }
+
+            let totalQty = 0;
+            let subtotal = 0;
+
+            itemsContainer.innerHTML = cart.map(item => {
+                totalQty += item.qty;
+                const itemTotal = (item.price || 0) * item.qty;
+                subtotal += itemTotal;
+                return `
+                    <div class="cart-item">
+                        <img src="${item.image_url || 'https://via.placeholder.com/80'}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/80'">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">${item.price?.toFixed(2)} ج.م</div>
+                            <div class="qty-control">
+                                <button class="qty-btn" onclick="updateQty(${item.id}, -1)"><i class="fas fa-minus"></i></button>
+                                <span class="qty-value">${item.qty}</span>
+                                <button class="qty-btn" onclick="updateQty(${item.id}, 1)"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                        <button class="remove-btn" onclick="removeItem(${item.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('summaryQty').textContent = totalQty;
+            document.getElementById('summarySubtotal').textContent = subtotal.toFixed(2) + ' ج.م';
+            document.getElementById('summaryTotal').textContent = subtotal.toFixed(2) + ' ج.م';
+            summary.style.display = 'block';
+        }
+
+        function updateQty(productId, delta) {
+            const item = cart.find(i => i.id === productId);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) {
+                cart = cart.filter(i => i.id !== productId);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function removeItem(productId) {
+            cart = cart.filter(i => i.id !== productId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+            showToast('تم إزالة المنتج', 'success');
+        }
+
+        function openCheckout() {
+            document.getElementById('checkoutName').value = currentUser?.name || '';
+            document.getElementById('checkoutEmail').value = currentUser?.email || '';
+            openModal('checkoutModal');
+        }
+
+        function selectPayment(el, method) {
+            document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            el.querySelector('input').checked = true;
+            selectedPayment = method;
+        }
+
+        function openLocation() {
+            window.open('location.html', '_blank', 'width=600,height=700');
+        }
+
+        function updateLocationButton() {
+            const btn = document.getElementById('locationBtn');
+            const text = document.getElementById('locationText');
+            if (selectedLocation) {
+                btn.classList.add('has-location');
+                text.textContent = 'تم تحديد الموقع ✓';
+            }
+        }
+
+        // Listen for location updates from location.html
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'deliveryLocation') {
+                selectedLocation = JSON.parse(e.newValue);
+                updateLocationButton();
+            }
+        });
+
+        async function submitOrder() {
+            const name = document.getElementById('checkoutName').value.trim();
+            const phone = document.getElementById('checkoutPhone').value.trim();
+            const email = document.getElementById('checkoutEmail').value.trim();
+            const address = document.getElementById('checkoutAddress').value.trim();
+
+            if (!phone) { showToast('رقم التليفون مطلوب', 'error'); return; }
+            if (!/^01[0-9]{9}$/.test(phone)) { showToast('رقم التليفون غير صحيح (مثال: 01xxxxxxxxx)', 'error'); return; }
+            if (cart.length === 0) { showToast('السلة فارغة', 'error'); return; }
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const items = cart.map(item => ({ name: item.name, qty: item.qty, price: item.price }));
+
+            const orderData = {
+                customer_name: name || currentUser?.name || 'عميل',
+                customer_email: email || currentUser?.email || '',
+                customer_phone: phone,
+                total_price: total,
+                status: 'pending',
+                items: items,
+                payment_method: selectedPayment,
+                location: selectedLocation,
+                address: address
+            };
+
+            try {
+                // Use RPC function to insert order
+                const { error } = await supabase.rpc('insert_order', {
+                    p_customer_name: orderData.customer_name,
+                    p_customer_email: orderData.customer_email,
+                    p_customer_phone: orderData.customer_phone,
+                    p_total_price: orderData.total_price,
+                    p_items: JSON.stringify(orderData.items),
+                    p_payment_method: orderData.payment_method,
+                    p_address: orderData.address
+                });
+
+                if (error) {
+                    // Fallback: try direct insert
+                    const { error: directError } = await supabase.from('orders').insert([orderData]);
+                    if (directError) throw directError;
+                }
+
+                // Clear cart
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                localStorage.removeItem('deliveryLocation');
+                selectedLocation = null;
+
+                showToast('تم إرسال الطلب بنجاح!', 'success');
+                closeModal('checkoutModal');
+
+                setTimeout(() => {
+                    window.location.href = 'orders.html';
+                }, 1500);
+
+            } catch (err) {
+                showToast('خطأ في إرسال الطلب: ' + err.message, 'error');
+            }
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function showToast(message, type) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
