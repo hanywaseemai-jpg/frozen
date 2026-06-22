@@ -4,7 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول - FrozenShop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            --background-color: #f8fafc;
+            --card-background: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --primary-color: #2563eb;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,103 +27,153 @@
         }
 
         body {
-            font-family: 'Cairo', 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            direction: rtl;
+            overflow-x: hidden;
+            padding: 20px;
         }
 
-        .container {
-            background: white;
+        /* Animations */
+        @keyframes containerSpawn {
+            from { opacity: 0; transform: translateY(30px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .login-container {
+            background: var(--card-background);
             padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            max-width: 400px;
-            width: 90%;
-            animation: slideUp 0.5s ease;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            max-width: 430px;
+            width: 100%;
+            animation: containerSpawn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            position: relative;
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .logo {
+        .logo-wrapper {
             text-align: center;
-            font-size: 32px;
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 10px;
+            margin-bottom: 25px;
+        }
+
+        .logo-img {
+            height: 65px;
+            object-fit: contain;
         }
 
         h1 {
             text-align: center;
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 10px;
+            color: var(--text-main);
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 8px;
         }
 
         .subtitle {
             text-align: center;
-            color: #999;
+            color: var(--text-muted);
             margin-bottom: 30px;
             font-size: 14px;
+            font-weight: 600;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 22px;
+            position: relative;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
+            color: var(--text-main);
+            font-weight: 700;
             font-size: 14px;
+        }
+
+        .input-icon-wrapper {
+            position: relative;
+        }
+
+        .input-icon-wrapper i {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 16px;
+            transition: color 0.3s ease;
         }
 
         input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            padding: 14px 45px 14px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
             font-size: 14px;
             font-family: 'Cairo', sans-serif;
-            transition: border-color 0.3s ease;
+            color: var(--text-main);
+            background-color: #f8fafc;
+            transition: all 0.3s ease;
         }
 
         input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary-color);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        input:focus + i {
+            color: var(--primary-color);
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .remember input {
+            width: auto;
+            cursor: pointer;
         }
 
         .btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-gradient);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: 'Cairo', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
         }
 
         .btn:disabled {
@@ -118,15 +183,16 @@
 
         .signup-link {
             text-align: center;
-            margin-top: 20px;
-            color: #666;
+            margin-top: 25px;
+            color: var(--text-muted);
             font-size: 14px;
+            font-weight: 600;
         }
 
         .signup-link a {
-            color: #667eea;
+            color: var(--primary-color);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
             transition: all 0.3s ease;
         }
 
@@ -134,96 +200,90 @@
             text-decoration: underline;
         }
 
+        /* Modern Alert styling */
         .alert {
-            padding: 12px;
-            border-radius: 8px;
+            padding: 14px;
+            border-radius: 12px;
             margin-bottom: 20px;
-            font-size: 13px;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 10px;
         }
 
         .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            display: flex;
         }
 
         .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+            display: flex;
         }
 
         .loader {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #f3f3f3;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-top: 2px solid white;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 8px;
+            animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        .remember {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .remember input {
-            width: auto;
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">🧊</div>
+
+    <div class="login-container">
+        <div class="logo-wrapper">
+            <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop Logo" class="logo-img">
+        </div>
+        
         <h1>تسجيل الدخول</h1>
-        <p class="subtitle">أهلاً بك في متجر الأطعمة المجمدة</p>
+        <p class="subtitle">أهلاً بك مجدداً في متجر الأطعمة المجمدة</p>
 
-        <div id="alert"></div>
+        <div id="alertBox" class="alert"></div>
 
-        <form id="loginForm" onsubmit="login(event)">
+        <form id="loginForm" onsubmit="handleLogin(event)">
             <div class="form-group">
                 <label>البريد الإلكتروني</label>
-                <input type="email" id="email" required placeholder="example@email.com">
+                <div class="input-icon-wrapper">
+                    <input type="email" id="email" required placeholder="name@example.com">
+                    <i class="fas fa-envelope"></i>
+                </div>
             </div>
 
             <div class="form-group">
                 <label>كلمة المرور</label>
-                <input type="password" id="password" required placeholder="••••••••">
+                <div class="input-icon-wrapper">
+                    <input type="password" id="password" required placeholder="••••••••">
+                    <i class="fas fa-lock"></i>
+                </div>
             </div>
 
-            <div class="remember">
-                <input type="checkbox" id="remember">
-                <label for="remember" style="margin-bottom: 0;">تذكرني</label>
+            <div class="remember-forgot">
+                <label class="remember">
+                    <input type="checkbox" id="remember">
+                    <span>تذكرني على هذا الجهاز</span>
+                </label>
             </div>
 
             <button type="submit" class="btn" id="submitBtn">
-                دخول
+                <i class="fas fa-sign-in-alt"></i> دخول
             </button>
         </form>
 
         <div class="signup-link">
-            ليس لديك حساب؟ <a href="signup.html">سجل الآن</a>
+            ليس لديك حساب حالياً؟ <a href="signup.html">سجل حساباً جديداً</a>
         </div>
     </div>
 
@@ -231,68 +291,86 @@
     <script>
         const SUPABASE_URL = 'https://ufmzgobtjtetrxvewvxl.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_DEZTCSDOUIcSzs_t0tOAqA_HVOdy8As';
-
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Check if already logged in
-        if (localStorage.getItem('user')) {
-            window.location.href = 'index.html';
-        }
+        // Redirect user if they are already logged in
+        window.addEventListener('load', () => {
+            const savedUser = localStorage.getItem('user');
+            if (savedUser) {
+                const parsed = JSON.parse(savedUser);
+                if (parsed.email === 'kevin.hany.08@hotmail.com') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }
+        });
 
-        async function login(e) {
+        async function handleLogin(e) {
             e.preventDefault();
-
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const btn = document.getElementById('submitBtn');
+            const alertBox = document.getElementById('alertBox');
+
+            // Reset alert status
+            alertBox.style.display = 'none';
+            alertBox.className = 'alert';
 
             btn.disabled = true;
-            btn.innerHTML = '<span class="loader"></span>جاري التحقق...';
+            btn.innerHTML = '<span class="loader"></span> جاري التحقق من الحساب...';
 
             try {
-                // Simulate login (في تطبيق حقيقي ستحتاج لـ authentication)
-                // هنا نستخدم طريقة بسيطة - حفظ البيانات مع تحقق من الـ email format
-
                 if (!email.includes('@')) {
-                    throw new Error('البريد الإلكتروني غير صحيح');
+                    throw new Error('صيغة البريد الإلكتروني المدخل غير صحيحة.');
                 }
-
                 if (password.length < 6) {
-                    throw new Error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                    throw new Error('كلمة المرور يجب ألا تقل عن 6 أحرف.');
                 }
 
-                // حفظ بيانات المستخدم
-                const user = {
-                    id: Math.random().toString(36).substr(2, 9),
+                // 1. الاتصال بـ Supabase للتحقق من بيانات الدخول الرسمية
+                const { data, error } = await supabase.auth.signInWithPassword({
                     email: email,
-                    name: email.split('@')[0],
-                    points: 0,
-                    joinDate: new Date().toISOString()
+                    password: password
+                });
+
+                if (error) throw error;
+
+                // 2. تجميع وحفظ بيانات جلسة المستخدم محلياً
+                const sessionUser = {
+                    id: data.user.id,
+                    email: data.user.email,
+                    name: data.user.user_metadata.full_name || email.split('@')[0],
+                    joinDate: data.user.created_at
                 };
 
-                localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem('user', JSON.stringify(sessionUser));
 
                 if (document.getElementById('remember').checked) {
                     localStorage.setItem('rememberMe', 'true');
                 }
 
-                showAlert('✅ تم تسجيل الدخول بنجاح!', 'success');
+                // 3. إظهار رسالة النجاح
+                alertBox.innerHTML = '<i class="fas fa-check-circle"></i> تم تسجيل الدخول بنجاح! جاري التوجيه...';
+                alertBox.classList.add('alert-success');
+                alertBox.style.display = 'flex';
+
+                // 4. شرط توجيه الأدمن الفريد المطلـوب
                 setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
+                    if (email.toLowerCase() === 'kevin.hany.08@hotmail.com') {
+                        window.location.href = 'admin.html'; // توجيه الأدمن لصفحة التحكم الرئيسية
+                    } else {
+                        window.location.href = 'index.html'; // توجيه باقي الزوار للصفحة الرئيسية للمتجر
+                    }
+                }, 1200);
 
             } catch (err) {
-                showAlert('❌ ' + err.message, 'error');
-            } finally {
+                alertBox.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${err.message}`;
+                alertBox.classList.add('alert-error');
+                alertBox.style.display = 'flex';
                 btn.disabled = false;
-                btn.innerHTML = 'دخول';
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> دخول';
             }
-        }
-
-        function showAlert(message, type) {
-            const alertDiv = document.getElementById('alert');
-            alertDiv.className = `alert alert-${type}`;
-            alertDiv.textContent = message;
         }
     </script>
 </body>
