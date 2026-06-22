@@ -917,10 +917,11 @@
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
+        // ========== ORDERS (using RPC functions) ==========
         async function loadOrders() {
             showLoading('ordersLoading', true);
             try {
-                const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+                const { data, error } = await supabase.rpc('get_all_orders');
                 if (error) throw error;
                 allOrders = data || [];
                 renderOrders();
@@ -996,7 +997,10 @@
 
         async function updateOrderStatus(orderId, newStatus) {
             try {
-                const { error } = await supabase.from('orders').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', orderId);
+                const { error } = await supabase.rpc('update_order_status', {
+                    order_id: orderId,
+                    new_status: newStatus
+                });
                 if (error) throw error;
                 const order = allOrders.find(o => o.id === orderId);
                 if (order) order.status = newStatus;
@@ -1011,7 +1015,7 @@
         async function deleteOrder(orderId) {
             if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) return;
             try {
-                const { error } = await supabase.from('orders').delete().eq('id', orderId);
+                const { error } = await supabase.rpc('delete_order_by_id', { order_id: orderId });
                 if (error) throw error;
                 allOrders = allOrders.filter(o => o.id !== orderId);
                 renderOrders(); updateStats();
@@ -1046,10 +1050,11 @@
             openModal('orderModal');
         }
 
+        // ========== PRODUCTS (using RPC functions) ==========
         async function loadProducts() {
             showLoading('productsLoading', true);
             try {
-                const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+                const { data, error } = await supabase.rpc('get_all_products');
                 if (error) throw error;
                 allProducts = data || [];
                 renderProducts();
@@ -1115,24 +1120,37 @@
 
         async function saveProduct() {
             const id = document.getElementById('productId').value;
-            const data = {
-                name: document.getElementById('productName').value.trim(),
-                description: document.getElementById('productDesc').value.trim(),
-                price: parseFloat(document.getElementById('productPrice').value) || 0,
-                stock: parseInt(document.getElementById('productStock').value) || 0,
-                image_url: document.getElementById('productImage').value.trim(),
-                category: document.getElementById('productCategory').value,
-                updated_at: new Date().toISOString()
-            };
-            if (!data.name) { showToast('اسم المنتج مطلوب', 'error'); return; }
+            const name = document.getElementById('productName').value.trim();
+            const description = document.getElementById('productDesc').value.trim();
+            const price = parseFloat(document.getElementById('productPrice').value) || 0;
+            const stock = parseInt(document.getElementById('productStock').value) || 0;
+            const image_url = document.getElementById('productImage').value.trim();
+            const category = document.getElementById('productCategory').value;
+
+            if (!name) { showToast('اسم المنتج مطلوب', 'error'); return; }
+
             try {
                 if (id) {
-                    const { error } = await supabase.from('products').update(data).eq('id', id);
+                    const { error } = await supabase.rpc('update_product_by_id', {
+                        p_id: parseInt(id),
+                        p_name: name,
+                        p_description: description,
+                        p_price: price,
+                        p_stock: stock,
+                        p_image_url: image_url,
+                        p_category: category
+                    });
                     if (error) throw error;
                     showToast('تم تحديث المنتج', 'success');
                 } else {
-                    data.created_at = new Date().toISOString();
-                    const { error } = await supabase.from('products').insert([data]);
+                    const { error } = await supabase.rpc('insert_product', {
+                        p_name: name,
+                        p_description: description,
+                        p_price: price,
+                        p_stock: stock,
+                        p_image_url: image_url,
+                        p_category: category
+                    });
                     if (error) throw error;
                     showToast('تم إضافة المنتج', 'success');
                 }
@@ -1144,7 +1162,7 @@
         async function deleteProduct(id) {
             if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
             try {
-                const { error } = await supabase.from('products').delete().eq('id', id);
+                const { error } = await supabase.rpc('delete_product_by_id', { p_id: id });
                 if (error) throw error;
                 allProducts = allProducts.filter(p => p.id !== id);
                 renderProducts();
@@ -1152,10 +1170,11 @@
             } catch (err) { showToast('خطأ في الحذف: ' + err.message, 'error'); }
         }
 
+        // ========== CATEGORIES (using RPC functions) ==========
         async function loadCategories() {
             showLoading('categoriesLoading', true);
             try {
-                const { data, error } = await supabase.from('categories').select('*').order('created_at', { ascending: false });
+                const { data, error } = await supabase.rpc('get_all_categories');
                 if (error) throw error;
                 allCategories = data || [];
                 renderCategories();
@@ -1203,19 +1222,25 @@
 
         async function saveCategory() {
             const id = document.getElementById('categoryId').value;
-            const data = {
-                name: document.getElementById('categoryName').value.trim(),
-                icon: document.getElementById('categoryIcon').value.trim() || 'fas fa-tag'
-            };
-            if (!data.name) { showToast('اسم الفئة مطلوب', 'error'); return; }
+            const name = document.getElementById('categoryName').value.trim();
+            const icon = document.getElementById('categoryIcon').value.trim() || 'fas fa-tag';
+
+            if (!name) { showToast('اسم الفئة مطلوب', 'error'); return; }
+
             try {
                 if (id) {
-                    const { error } = await supabase.from('categories').update(data).eq('id', id);
+                    const { error } = await supabase.rpc('update_category_by_id', {
+                        c_id: parseInt(id),
+                        c_name: name,
+                        c_icon: icon
+                    });
                     if (error) throw error;
                     showToast('تم تحديث الفئة', 'success');
                 } else {
-                    data.created_at = new Date().toISOString();
-                    const { error } = await supabase.from('categories').insert([data]);
+                    const { error } = await supabase.rpc('insert_category', {
+                        c_name: name,
+                        c_icon: icon
+                    });
                     if (error) throw error;
                     showToast('تم إضافة الفئة', 'success');
                 }
@@ -1227,7 +1252,7 @@
         async function deleteCategory(id) {
             if (!confirm('هل أنت متأكد من حذف هذه الفئة؟')) return;
             try {
-                const { error } = await supabase.from('categories').delete().eq('id', id);
+                const { error } = await supabase.rpc('delete_category_by_id', { c_id: id });
                 if (error) throw error;
                 allCategories = allCategories.filter(c => c.id !== id);
                 renderCategories();
@@ -1235,14 +1260,29 @@
             } catch (err) { showToast('خطأ في الحذف: ' + err.message, 'error'); }
         }
 
-        function updateStats() {
-            document.getElementById('totalOrders').textContent = allOrders.length;
-            const revenue = allOrders.reduce((sum, o) => sum + (o.total_price || 0), 0);
-            document.getElementById('totalRevenue').textContent = revenue.toFixed(2) + ' ج.م';
-            document.getElementById('pendingOrders').textContent = allOrders.filter(o => o.status === 'pending').length;
-            document.getElementById('totalProducts').textContent = allProducts.length;
+        // ========== STATS ==========
+        async function updateStats() {
+            try {
+                const { data, error } = await supabase.rpc('get_dashboard_stats');
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    const stats = data[0];
+                    document.getElementById('totalOrders').textContent = stats.total_orders || 0;
+                    document.getElementById('totalRevenue').textContent = (stats.total_revenue || 0).toFixed(2) + ' ج.م';
+                    document.getElementById('pendingOrders').textContent = stats.pending_orders || 0;
+                    document.getElementById('totalProducts').textContent = stats.total_products || 0;
+                }
+            } catch (err) {
+                // Fallback to local calculation
+                document.getElementById('totalOrders').textContent = allOrders.length;
+                const revenue = allOrders.reduce((sum, o) => sum + (o.total_price || 0), 0);
+                document.getElementById('totalRevenue').textContent = revenue.toFixed(2) + ' ج.م';
+                document.getElementById('pendingOrders').textContent = allOrders.filter(o => o.status === 'pending').length;
+                document.getElementById('totalProducts').textContent = allProducts.length;
+            }
         }
 
+        // ========== AUTO REFRESH ==========
         function startAutoRefresh() {
             if (autoRefreshInterval) clearInterval(autoRefreshInterval);
             autoRefreshInterval = setInterval(() => {
@@ -1261,6 +1301,7 @@
             });
         }
 
+        // ========== UTILS ==========
         function formatDate(dateStr) {
             if (!dateStr) return '-';
             const d = new Date(dateStr);
