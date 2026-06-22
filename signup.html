@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.htmlf.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
@@ -20,11 +20,7 @@
             --accent-color: #0891b2;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Cairo', sans-serif;
@@ -43,51 +39,16 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             max-width: 450px;
             width: 100%;
-            position: relative;
         }
 
-        .logo-wrapper {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .logo-img {
-            height: 65px;
-            object-fit: contain;
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--text-main);
-            font-size: 26px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: var(--text-muted);
-            margin-bottom: 25px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-main);
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .input-icon-wrapper {
-            position: relative;
-        }
-
+        .logo-wrapper { text-align: center; margin-bottom: 20px; }
+        .logo-img { height: 65px; object-fit: contain; }
+        h1 { text-align: center; color: var(--text-main); font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+        .subtitle { text-align: center; color: var(--text-muted); margin-bottom: 25px; font-size: 14px; font-weight: 600; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 8px; color: var(--text-main); font-weight: 700; font-size: 14px; }
+        .input-icon-wrapper { position: relative; }
+        
         .input-icon-wrapper i {
             position: absolute;
             top: 50%;
@@ -95,12 +56,11 @@
             transform: translateY(-50%);
             color: var(--text-muted);
             font-size: 16px;
-            transition: color 0.3s ease;
         }
 
         input {
             width: 100%;
-            padding: 13px 45px 13px 15px; /* مسافة لعدم تداخل النص مع الأيقونة */
+            padding: 13px 45px 13px 15px;
             border: 2px solid var(--border-color);
             border-radius: 12px;
             font-size: 14px;
@@ -115,10 +75,6 @@
             border-color: var(--accent-color);
             background-color: #fff;
             box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1);
-        }
-
-        input:focus + i {
-            color: var(--accent-color);
         }
 
         .btn {
@@ -141,33 +97,11 @@
             margin-top: 10px;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
-        }
-
-        .btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        .login-link {
-            text-align: center;
-            margin-top: 25px;
-            color: var(--text-muted);
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .login-link a {
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 700;
-        }
-
-        .login-link a:hover {
-            text-decoration: underline;
-        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4); }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .login-link { text-align: center; margin-top: 25px; color: var(--text-muted); font-size: 14px; font-weight: 600; }
+        .login-link a { color: var(--accent-color); text-decoration: none; font-weight: 700; }
+        .login-link a:hover { text-decoration: underline; }
 
         .alert {
             padding: 14px;
@@ -179,34 +113,10 @@
             align-items: center;
             gap: 10px;
         }
-
-        .alert-error {
-            background: #fef2f2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
-            display: flex;
-        }
-
-        .alert-success {
-            background: #ecfdf5;
-            color: #065f46;
-            border: 1px solid #6ee7b7;
-            display: flex;
-        }
-
-        .loader {
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top: 2px solid white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; display: flex; }
+        .alert-success { background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; display: flex; }
+        .loader { width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -266,7 +176,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // تعريف نظيف وواحد فقط بدون أي تكرار
+        // تعريف نظيف وواحد فقط في كامل الملف يمنع الـ SyntaxError
         const SUPABASE_URL = 'https://ufmzgobtjtetrxvewvxl.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_DEZTCSDOUIcSzs_t0tOAqA_HVOdy8As';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -280,30 +190,20 @@
             const btn = document.getElementById('submitBtn');
             const alertBox = document.getElementById('alertBox');
 
-            // إعادة تهيئة التنبيهات
             alertBox.style.display = 'none';
             alertBox.className = 'alert';
 
             try {
-                if (password !== confirmPassword) {
-                    throw new Error('كلمتا المرور غير متطابقتين، يرجى التحقق مجدداً.');
-                }
-                if (password.length < 6) {
-                    throw new Error('يجب أن تتكون كلمة المرور من 6 خانات على الأقل.');
-                }
+                if (password !== confirmPassword) throw new Error('كلمتا المرور غير متطابقتين.');
+                if (password.length < 6) throw new Error('يجب أن تتكون كلمة المرور من 6 خانات على الأقل.');
 
                 btn.disabled = true;
                 btn.innerHTML = '<span class="loader"></span> جاري إنشاء الحساب...';
 
-                // تسجيل المستخدم في نظام سوبابيز
                 const { data, error } = await supabase.auth.signUp({
                     email: email,
                     password: password,
-                    options: {
-                        data: {
-                            full_name: fullName
-                        }
-                    }
+                    options: { data: { full_name: fullName } }
                 });
 
                 if (error) throw error;
@@ -312,10 +212,7 @@
                 alertBox.classList.add('alert-success');
                 alertBox.style.display = 'flex';
 
-                // التوجيه لصفحة تسجيل الدخول ليدخل منها بشكل رسمي وآمن
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 2000);
+                setTimeout(() => { window.location.href = 'login.html'; }, 2000);
 
             } catch (err) {
                 alertBox.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${err.message}`;
