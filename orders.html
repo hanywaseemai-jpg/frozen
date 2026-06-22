@@ -45,14 +45,35 @@
         }
         .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
         .logo img { height: 45px; }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .back-btn, .logout-btn {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
         .back-btn {
-            width: 42px; height: 42px;
-            border-radius: 12px; border: none;
-            background: var(--bg); color: var(--dark);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 18px; text-decoration: none;
+            background: var(--bg);
+            color: var(--dark);
         }
         .back-btn:hover { background: var(--primary); color: white; }
+        .logout-btn {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+        .logout-btn:hover { background: var(--danger); color: white; }
 
         .container {
             max-width: 900px;
@@ -89,10 +110,11 @@
         }
 
         .order-id {
-            font-family: monospace;
-            font-weight: 700;
+            font-family: 'Cairo', monospace;
+            font-weight: 800;
             color: var(--primary);
-            font-size: 16px;
+            font-size: 18px;
+            letter-spacing: 1px;
         }
 
         .order-status {
@@ -209,7 +231,10 @@
             <a href="index.html" class="logo">
                 <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop">
             </a>
-            <a href="index.html" class="back-btn"><i class="fas fa-arrow-right"></i></a>
+            <div class="header-actions">
+                <a href="index.html" class="back-btn"><i class="fas fa-arrow-right"></i> رجوع</a>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> خروج</button>
+            </div>
         </div>
     </header>
 
@@ -244,15 +269,26 @@
             await loadOrders();
         }
 
+        function logout() {
+            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+            localStorage.removeItem('user');
+            localStorage.removeItem('rememberMe');
+            localStorage.removeItem('cart');
+            localStorage.removeItem('favorites');
+            window.location.href = 'index.html';
+        }
+
         async function loadOrders() {
             try {
-                // Try RPC first, fallback to direct query
                 let data, error;
+
+                // Try get_user_orders RPC first
                 try {
-                    const result = await supabase.rpc('get_all_orders');
+                    const result = await supabase.rpc('get_user_orders', { p_email: currentUser.email });
                     data = result.data;
                     error = result.error;
                 } catch (e) {
+                    // Fallback
                     const result = await supabase.from('orders').select('*').order('created_at', { ascending: false });
                     data = result.data;
                     error = result.error;
@@ -260,8 +296,12 @@
 
                 if (error) throw error;
 
-                // Filter orders by current user's email
-                const userOrders = (data || []).filter(o => o.customer_email === currentUser.email);
+                // Filter by user email if using fallback
+                let userOrders = data || [];
+                if (!userOrders.length || !userOrders[0]?.customer_email) {
+                    userOrders = (data || []).filter(o => o.customer_email === currentUser.email);
+                }
+
                 renderOrders(userOrders);
             } catch (err) {
                 showToast('خطأ في التحميل: ' + err.message, 'error');
@@ -273,6 +313,11 @@
                     </div>
                 `;
             }
+        }
+
+        function formatOrderId(id) {
+            // Format as #000001, #000002, etc.
+            return '#' + String(id).padStart(6, '0');
         }
 
         function renderOrders(orders) {
@@ -307,7 +352,7 @@
                 return `
                     <div class="order-card">
                         <div class="order-header">
-                            <span class="order-id">#${order.id}</span>
+                            <span class="order-id">${formatOrderId(order.id)}</span>
                             <span class="order-status status-${order.status}">${getStatusText(order.status)}</span>
                         </div>
                         <div class="order-items">
