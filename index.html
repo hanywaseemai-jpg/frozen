@@ -189,10 +189,33 @@
 
         /* Hero */
         .hero {
+            position: relative;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            padding: 60px 20px;
+            padding: 70px 20px 60px;
             text-align: center;
             color: white;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(96,165,250,0.25), transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(59,130,246,0.2), transparent 45%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            animation: heroIn 0.6s ease;
+        }
+
+        @keyframes heroIn {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .hero h1 {
@@ -207,6 +230,30 @@
             max-width: 500px;
             margin: 0 auto 24px;
         }
+
+        .hero-badges {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #e2e8f0;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 9px 16px;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+        }
+
+        .hero-badge i { color: var(--primary-light); }
 
         /* Categories */
         .categories-section {
@@ -269,13 +316,13 @@
 
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 26px;
         }
 
         .product-card {
             background: var(--card-bg);
-            border-radius: 20px;
+            border-radius: 22px;
             overflow: hidden;
             box-shadow: var(--shadow);
             transition: all 0.3s ease;
@@ -289,7 +336,7 @@
 
         .product-image {
             position: relative;
-            height: 200px;
+            height: 240px;
             overflow: hidden;
         }
 
@@ -308,8 +355,8 @@
             position: absolute;
             top: 12px;
             left: 12px;
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             border: none;
             background: white;
@@ -341,7 +388,7 @@
         }
 
         .product-info {
-            padding: 16px;
+            padding: 20px;
         }
 
         .product-category {
@@ -352,16 +399,16 @@
         }
 
         .product-name {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
             margin-bottom: 8px;
             line-height: 1.4;
         }
 
         .product-desc {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--gray);
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             line-height: 1.5;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -376,7 +423,7 @@
         }
 
         .product-price {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
             color: var(--primary);
         }
@@ -388,8 +435,8 @@
         }
 
         .add-to-cart {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 12px;
             border: none;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -398,7 +445,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 17px;
             transition: all 0.2s ease;
         }
 
@@ -411,18 +458,111 @@
         .footer {
             background: var(--dark);
             color: white;
-            padding: 40px 20px;
-            text-align: center;
+            padding: 50px 20px 0;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.3fr 1fr 1fr;
+            gap: 36px;
+            padding-bottom: 36px;
+        }
+
+        .footer-col h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            color: white;
         }
 
         .footer-logo {
-            height: 50px;
-            margin-bottom: 16px;
+            height: 42px;
+            margin-bottom: 14px;
+            object-fit: contain;
         }
 
-        .footer p {
-            color: var(--gray-light);
+        .footer-col p, .footer-col a {
+            color: #94a3b8;
             font-size: 14px;
+            line-height: 1.8;
+            text-decoration: none;
+            display: block;
+        }
+
+        .footer-about { max-width: 320px; margin-bottom: 18px; }
+
+        .footer-links a {
+            margin-bottom: 10px;
+            transition: color 0.2s ease;
+        }
+        .footer-links a:hover { color: white; }
+
+        .footer-contact p {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .footer-contact i { color: var(--primary-light); margin-top: 2px; width: 16px; text-align: center; }
+
+        .footer-social {
+            display: flex;
+            gap: 10px;
+        }
+
+        .social-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .social-btn.facebook { background: #1877f2; }
+        .social-btn.whatsapp { background: #25D366; }
+        .social-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 18px 20px;
+            text-align: center;
+        }
+
+        .footer-bottom p {
+            color: var(--gray-light);
+            font-size: 13px;
+        }
+
+        /* Floating WhatsApp button */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 58px;
+            height: 58px;
+            background: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 6px 18px rgba(37,211,102,0.5);
+            z-index: 1500;
+            text-decoration: none;
+            animation: waPulse 2.4s infinite;
+        }
+        .whatsapp-float:hover { transform: scale(1.08); }
+
+        @keyframes waPulse {
+            0% { box-shadow: 0 6px 18px rgba(37,211,102,0.5), 0 0 0 0 rgba(37,211,102,0.5); }
+            70% { box-shadow: 0 6px 18px rgba(37,211,102,0.5), 0 0 0 14px rgba(37,211,102,0); }
+            100% { box-shadow: 0 6px 18px rgba(37,211,102,0.5), 0 0 0 0 rgba(37,211,102,0); }
         }
 
         /* Toast */
@@ -481,10 +621,35 @@
         @media (max-width: 768px) {
             .header-inner { flex-wrap: wrap; }
             .search-bar { order: 3; max-width: 100%; width: 100%; }
-            .hero h1 { font-size: 24px; }
-            .products-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero { padding: 50px 16px 40px; }
+            .hero h1 { font-size: 26px; }
+            .hero p { font-size: 14px; }
+            .hero-badge { font-size: 12px; padding: 8px 13px; }
+            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+            .product-image { height: 150px; }
+            .product-info { padding: 14px; }
+            .product-name { font-size: 14px; }
+            .product-price { font-size: 17px; }
+            .add-to-cart { width: 38px; height: 38px; font-size: 14px; }
             .auth-section { gap: 4px; }
             .user-name { display: none !important; }
+            .footer-inner { grid-template-columns: 1fr; gap: 28px; text-align: center; }
+            .footer-about { margin: 0 auto 18px; }
+            .footer-social { justify-content: center; }
+            .footer-contact p { justify-content: center; }
+            .whatsapp-float { width: 52px; height: 52px; font-size: 25px; bottom: 18px; right: 18px; }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid { grid-template-columns: 1fr; }
+            .product-image { height: 220px; }
+            .product-name { font-size: 17px; }
+            .product-desc { font-size: 14px; }
+            .product-price { font-size: 20px; }
+            .categories-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            .category-card { padding: 14px 8px; }
+            .category-card i { font-size: 24px; }
+            .category-card span { font-size: 12px; }
         }
     </style>
 <base target="_blank">
@@ -530,8 +695,15 @@
     </header>
 
     <section class="hero">
-        <h1>🧊 أشهى الأطعمة المجمدة</h1>
-        <p>جودة عالية، توصيل سريع، وأسعار ممتازة. اطلب الآن واستمتع بطعم لا مثيل له!</p>
+        <div class="hero-content">
+            <h1>🧊 أشهى الأطعمة المجمدة</h1>
+            <p>جودة عالية، توصيل سريع، وأسعار ممتازة. اطلب الآن واستمتع بطعم لا مثيل له!</p>
+            <div class="hero-badges">
+                <span class="hero-badge"><i class="fas fa-truck-fast"></i> توصيل سريع</span>
+                <span class="hero-badge"><i class="fas fa-snowflake"></i> جودة مضمونة</span>
+                <span class="hero-badge"><i class="fas fa-money-bill-wave"></i> دفع عند الاستلام</span>
+            </div>
+        </div>
     </section>
 
     <section class="categories-section">
@@ -555,9 +727,37 @@
     </section>
 
     <footer class="footer">
-        <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop" class="footer-logo">
-        <p>© 2026 FrozenShop - جميع الحقوق محفوظة</p>
+        <div class="footer-inner">
+            <div class="footer-col">
+                <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop" class="footer-logo">
+                <p class="footer-about">FrozenShop بيوصلك أشهى الأطعمة المجمدة بجودة عالية وأسعار ممتازة، مباشرة لباب البيت.</p>
+                <div class="footer-social">
+                    <a href="https://facebook.com/frozenshop" class="social-btn facebook" title="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://wa.me/201000000000" class="social-btn whatsapp" title="واتساب"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-col footer-links">
+                <h4>روابط سريعة</h4>
+                <a href="index.html">الرئيسية</a>
+                <a href="favorites.html">المفضلة</a>
+                <a href="cart.html">السلة</a>
+                <a href="orders.html">طلباتي</a>
+            </div>
+            <div class="footer-col footer-contact">
+                <h4>تواصل معنا</h4>
+                <p><i class="fas fa-location-dot"></i> القاهرة، مصر</p>
+                <p><i class="fas fa-phone"></i> 01000000000</p>
+                <p><i class="fas fa-clock"></i> يوميًا من 9 صباحًا حتى 12 منتصف الليل</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 FrozenShop - جميع الحقوق محفوظة</p>
+        </div>
     </footer>
+
+    <a href="https://wa.me/201000000000" class="whatsapp-float" title="تواصل معنا على واتساب">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
     <div class="toast-container" id="toastContainer"></div>
 
