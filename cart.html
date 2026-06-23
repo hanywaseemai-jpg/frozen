@@ -806,27 +806,26 @@
 
             try {
                 // Try RPC first
-                let result;
-                try {
-                    result = await supabase.rpc('insert_order', {
-                        p_customer_name: orderData.customer_name,
-                        p_customer_email: orderData.customer_email,
-                        p_customer_phone: orderData.customer_phone,
-                        p_total_price: orderData.total_price,
-                        p_items: JSON.stringify(orderData.items),
-                        p_payment_method: orderData.payment_method,
-                        p_address: orderData.address,
-                        p_location: orderData.location ? JSON.stringify(orderData.location) : null
-                    });
-                } catch (e) {
-                    // Fallback to direct insert
-                    result = await supabase.from('orders').insert([orderData]);
+                let result = await supabase.rpc('insert_order', {
+                    p_customer_name: orderData.customer_name,
+                    p_customer_email: orderData.customer_email,
+                    p_customer_phone: orderData.customer_phone,
+                    p_total_price: orderData.total_price,
+                    p_items: JSON.stringify(orderData.items),
+                    p_payment_method: orderData.payment_method,
+                    p_address: orderData.address,
+                    p_location: orderData.location ? JSON.stringify(orderData.location) : null
+                });
+
+                if (result.error) {
+                    console.warn('insert_order RPC failed, falling back to direct insert:', result.error.message);
+                    result = await supabase.from('orders').insert([orderData]).select('id').single();
                 }
 
                 if (result.error) throw result.error;
 
                 // Get the order ID and format it
-                const orderId = result.data || 'جديد';
+                const orderId = result.data?.id ?? result.data ?? 'جديد';
                 const formattedId = typeof orderId === 'number' ? String(orderId).padStart(6, '0') : '000001';
 
                 // Clear cart
