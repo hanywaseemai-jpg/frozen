@@ -949,9 +949,13 @@
             if (filtered.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-inbox"></i><h3>لا توجد طلبات</h3></div></td></tr>';
             } else {
-                tbody.innerHTML = filtered.map(order => `
+                tbody.innerHTML = filtered.map(order => {
+                    let loc = order.location;
+                    if (typeof loc === 'string') { try { loc = JSON.parse(loc); } catch (e) { loc = null; } }
+                    const hasLoc = loc && loc.lat && loc.lng;
+                    return `
                     <tr>
-                        <td><span class="order-id">#${order.id}</span></td>
+                        <td><span class="order-id">#${order.id}</span> ${hasLoc ? '<i class="fas fa-map-marker-alt" style="color:var(--success);margin-right:4px;" title="يوجد موقع توصيل محدد"></i>' : ''}</td>
                         <td><div class="customer-info"><span class="customer-name">${order.customer_name || 'غير معروف'}</span><span class="customer-email">${order.customer_email || ''}</span></div></td>
                         <td>${order.customer_phone || '-'}</td>
                         <td><span class="price">${order.total_price?.toFixed(2) || '0.00'} ج.م</span></td>
@@ -967,7 +971,7 @@
                             <button class="btn-icon delete" onclick="deleteOrder(${order.id})" title="حذف"><i class="fas fa-trash"></i></button>
                         </div></td>
                     </tr>
-                `).join('');
+                `;}).join('');
             }
 
             const recent = allOrders.slice(0, 5);
@@ -1033,13 +1037,33 @@
                     <div class="item-row"><span class="item-name">${item.name}</span><span class="item-qty">x${item.qty}</span><span class="item-price">${item.price?.toFixed(2)} ج.م</span></div>
                 `).join('');
             } else { itemsHtml = '<p style="color:var(--gray);text-align:center;">لا توجد تفاصيل للمنتجات</p>'; }
+
+            // location may come back as a parsed object (jsonb column) or as a JSON string (text column)
+            let loc = order.location;
+            if (typeof loc === 'string') {
+                try { loc = JSON.parse(loc); } catch (e) { loc = null; }
+            }
+            const hasLocation = loc && loc.lat && loc.lng;
+            const locationHtml = hasLocation ? `
+                <div><label class="form-label">الموقع</label>
+                    <a href="https://www.google.com/maps?q=${loc.lat},${loc.lng}" style="color:var(--primary);font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px;">
+                        <i class="fas fa-map-marker-alt"></i> ${loc.address ? loc.address : 'عرض على الخريطة'}
+                    </a>
+                </div>
+            ` : `<div><label class="form-label">الموقع</label><p style="color:var(--gray);">لم يحدد العميل موقعًا</p></div>`;
+
+            const paymentMap = { cash: 'كاش عند الاستلام', instapay: 'انستا باي', vodafone: 'فودافون كاش' };
+
             document.getElementById('orderModalBody').innerHTML = `
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
                     <div><label class="form-label">العميل</label><p style="font-weight:600;">${order.customer_name || 'غير معروف'}</p></div>
                     <div><label class="form-label">البريد الإلكتروني</label><p>${order.customer_email || '-'}</p></div>
                     <div><label class="form-label">الهاتف</label><p>${order.customer_phone || '-'}</p></div>
                     <div><label class="form-label">الحالة</label><span class="badge badge-${order.status}">${getStatusText(order.status)}</span></div>
+                    <div><label class="form-label">طريقة الدفع</label><p>${paymentMap[order.payment_method] || order.payment_method || '-'}</p></div>
+                    ${locationHtml}
                 </div>
+                <div style="margin-bottom:24px;"><label class="form-label">العنوان / ملاحظات</label><p style="background:var(--bg);padding:10px 14px;border-radius:10px;font-size:13px;">${order.address || 'لا يوجد'}</p></div>
                 <div style="margin-bottom:24px;"><label class="form-label">المنتجات</label><div class="items-list">${itemsHtml}</div></div>
                 <div style="display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:2px solid var(--border);">
                     <span style="font-weight:700;font-size:16px;">الإجمالي</span>
