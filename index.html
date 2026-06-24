@@ -3,494 +3,919 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FrozenShop | تجربة تسوق عصرية</title>
+    <title>FrozenShop - متجر الأطعمة المجمدة</title>
+    <meta name="description" content="FrozenShop يوصلك أشهى الأطعمة المجمدة بجودة عالية، توصيل سريع لكل محافظات مصر، ودفع عند الاستلام.">
+    <meta property="og:title" content="FrozenShop - متجر الأطعمة المجمدة">
+    <meta property="og:description" content="أطعمة مجمدة بجودة لا تقبل المساومة. اطلب الآن واستلم في أسرع وقت.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0a0a'/%3E%3Cpath d='M32 14v36M16 23l32 18M16 41l32-18' stroke='white' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- NOTE (perf): this pulls the FULL Font Awesome icon set for ~15 icons used
+         on this page. Worth revisiting later: self-host a subset, or swap to
+         inline SVGs, to cut a meaningful amount of render-blocking CSS/font weight. -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
-            --primary: #2563eb; /* أزرق براند */
-            --primary-dark: #1e40af;
-            --accent: #3b82f6;
-            --bg-body: #f8fafc;
-            --bg-card: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
+            --black: #0a0a0a;
             --white: #ffffff;
-            --radius-lg: 24px;
-            --radius-md: 16px;
-            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05);
-            --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-            --glass: rgba(255, 255, 255, 0.8);
+            --gray-bg: #f7f7f7;
+            --gray-border: #e2e2e2;
+            --gray-text: #595959; /* darkened slightly from #6b6b6b for safer AA contrast at small sizes */
+            --success: #16a34a;
+            --danger: #dc2626;
+            --radius: 18px;
+            --shadow: 0 16px 30px rgba(0,0,0,0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Cairo', sans-serif;
-            background: var(--bg-body);
-            color: var(--text-main);
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        /* ===== Header & Nav ===== */
-        .header-wrapper {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255,255,255,0.3);
-        }
-
-        .header-main {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 15px 25px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 30px;
-        }
-
-        .logo img { height: 48px; transition: transform 0.3s; }
-        .logo:hover img { transform: scale(1.05); }
-
-        .search-container {
-            flex: 1;
-            max-width: 600px;
-            position: relative;
-        }
-
-        .search-container input {
-            width: 100%;
-            padding: 12px 50px 12px 20px;
             background: var(--white);
-            border: 1px solid #e2e8f0;
-            border-radius: 50px;
-            font-family: 'Cairo';
-            font-size: 14px;
-            transition: all 0.3s;
-            box-shadow: var(--shadow-sm);
+            color: var(--black);
+            min-height: 100vh;
         }
 
-        .search-container input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        a { color: inherit; }
+
+        img { max-width: 100%; }
+
+        .visually-hidden {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
         }
 
-        .search-container i {
-            position: absolute;
-            right: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
+        /* ===== Focus visibility (WCAG 2.4.7) ===== */
+        a:focus-visible, button:focus-visible, input:focus-visible {
+            outline: 3px solid var(--black);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+        .footer :focus-visible, .whatsapp-float:focus-visible {
+            outline-color: #ffffff;
         }
 
-        .actions { display: flex; align-items: center; gap: 15px; }
+        /* ===== Skip link ===== */
+        .skip-link {
+            position: absolute; top: -52px; right: 16px; background: var(--black); color: #fff;
+            padding: 10px 18px; border-radius: 0 0 10px 10px; font-weight: 700; font-size: 14px;
+            z-index: 2000; transition: top 0.2s ease; text-decoration: none;
+        }
+        .skip-link:focus-visible { top: 0; outline-offset: -3px; outline-color: #fff; }
 
-        .btn-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            color: var(--text-main);
-            text-decoration: none;
-            transition: all 0.3s;
-            border: 1px solid #e2e8f0;
+        /* ===== Marquee ===== */
+        .marquee { background: var(--black); color: white; overflow: hidden; white-space: nowrap; padding: 10px 0; }
+        .marquee-track { display: inline-flex; gap: 40px; animation: marquee 24s linear infinite; width: max-content; }
+        .marquee-track span { font-weight: 700; font-size: 13px; letter-spacing: 0.3px; display: inline-flex; align-items: center; gap: 8px; }
+        .marquee-track i { color: var(--white); opacity: 0.7; }
+        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* ===== Header ===== */
+        .header { background: var(--white); border-bottom: 2px solid var(--black); position: sticky; top: 0; z-index: 100; }
+        .header-inner { max-width: 1280px; margin: 0 auto; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo img { height: 44px; width: auto; object-fit: contain; }
+
+        .search-bar { flex: 1; max-width: 480px; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid var(--black); padding-bottom: 4px; }
+        .search-bar input { flex: 1; border: none; background: transparent; padding: 8px 4px; font-family: 'Cairo', sans-serif; font-size: 14px; min-width: 0; }
+        .search-bar input:focus { outline: none; }
+        .search-bar input:focus-visible { outline: none; } /* the bar itself shows focus via its parent border */
+        .search-bar:has(input:focus-visible) { border-bottom-color: var(--black); box-shadow: 0 2px 0 0 var(--black); }
+        .search-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--black); background: var(--black); color: white; cursor: pointer; font-size: 14px; transition: background-color 0.2s ease, color 0.2s ease; flex-shrink: 0; }
+        .search-btn:hover { background: white; color: var(--black); }
+
+        .auth-section { display: flex; align-items: center; gap: 10px; }
+        .login-btn {
+            padding: 10px 24px; background: var(--black); color: white; border: 2px solid var(--black);
+            border-radius: 30px; font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700;
+            cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+            transition: background-color 0.2s ease, color 0.2s ease; white-space: nowrap;
+        }
+        .login-btn:hover { background: white; color: var(--black); }
+        .logout-btn {
+            padding: 10px 16px; background: white; color: var(--black); border: 2px solid var(--black);
+            border-radius: 30px; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700;
+            cursor: pointer; display: none; align-items: center; gap: 6px; transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+        .logout-btn:hover { background: var(--danger); border-color: var(--danger); color: white; }
+        .user-name { font-size: 13px; font-weight: 700; color: var(--black); display: none; white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+
+        /* ===== Categories nav ===== */
+        .categories-nav { border-bottom: 1px solid var(--gray-border); }
+        .categories-nav-inner { max-width: 1280px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; gap: 18px; }
+
+        .category-link {
+            border: none; background: none; cursor: pointer; font-family: 'Cairo', sans-serif;
+            font-size: 14.5px; font-weight: 700; color: var(--black); text-decoration: none; white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px; border-radius: 20px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .category-link:hover { background: var(--gray-bg); }
+        .category-link[aria-pressed="true"] { background: var(--black); color: #fff; }
+
+        .categories-links {
+            flex: 1; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
+            -webkit-mask-image: linear-gradient(to left, transparent 0, black 24px, black calc(100% - 24px), transparent 100%);
+                    mask-image: linear-gradient(to left, transparent 0, black 24px, black calc(100% - 24px), transparent 100%);
+        }
+        .categories-links::-webkit-scrollbar { display: none; }
+
+        .nav-icons { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+        .header-btn {
+            width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--black);
+            background: white; color: var(--black); display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 16px; position: relative; transition: background-color 0.2s ease, color 0.2s ease; text-decoration: none;
+        }
+        .header-btn:hover { background: var(--black); color: white; }
+        .header-btn .badge {
+            position: absolute; top: -5px; left: -5px; background: var(--danger); color: white;
+            font-size: 11px; width: 19px; height: 19px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 700; border: 2px solid white;
         }
 
-        .btn-icon:hover {
-            background: var(--primary);
-            color: var(--white);
-            transform: translateY(-2px);
+        /* ===== Hero ===== */
+        .hero { padding: 64px 20px 56px; overflow: hidden; }
+        .hero-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; gap: 50px; }
+        .hero-text { flex: 1; }
+
+        .reveal-line { display: block; opacity: 0; transform: translateY(18px); animation: lineIn 0.7s ease forwards; }
+        .reveal-line.d1 { animation-delay: 0.05s; }
+        .reveal-line.d2 { animation-delay: 0.2s; }
+        .reveal-line.d3 { animation-delay: 0.35s; }
+        @keyframes lineIn { to { opacity: 1; transform: translateY(0); } }
+
+        .hero-text h1 { font-size: clamp(28px, 4vw, 44px); font-weight: 900; line-height: 1.3; margin-bottom: 18px; }
+        .hero-text h1 .accent { text-decoration: underline wavy var(--black) 3px; text-underline-offset: 6px; }
+        .hero-text p { font-size: 15.5px; color: var(--gray-text); max-width: 420px; margin-bottom: 26px; line-height: 1.8; }
+
+        .hero-cta {
+            display: inline-flex; align-items: center; gap: 10px; background: var(--black); color: white;
+            font-weight: 800; font-size: 15px; padding: 15px 32px; border-radius: 30px; text-decoration: none;
+            border: 2px solid var(--black); transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
         }
+        .hero-cta:hover { background: white; color: var(--black); transform: translateY(-3px); box-shadow: var(--shadow); }
 
-        .btn-icon .badge {
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            background: #ef4444;
-            color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-weight: 800;
+        .hero-visual { flex: 1; position: relative; height: 320px; min-width: 280px; }
+        .hero-visual::before {
+            content: ''; position: absolute; width: 230px; height: 230px; background: var(--black);
+            border-radius: 28px; top: 8%; left: 14%; z-index: 0;
         }
-
-        /* ===== Hero Section ===== */
-        .hero {
-            padding: 40px 25px;
-            max-width: 1400px;
-            margin: 0 auto;
+        .hero-img, .hero-img-skel {
+            position: absolute; border-radius: 18px; object-fit: cover;
+            border: 5px solid white; box-shadow: var(--shadow); background: var(--gray-bg);
+            filter: grayscale(1); transition: filter 0.45s ease, transform 0.3s ease;
         }
+        .hero-visual:hover .hero-img, .hero-visual:focus-within .hero-img { filter: grayscale(0); }
+        .hero-img-1, .hero-img-skel:nth-child(1) { width: 170px; height: 170px; top: 4%; right: 10%; transform: rotate(-4deg); z-index: 2; }
+        .hero-img-2, .hero-img-skel:nth-child(2) { width: 150px; height: 150px; top: 42%; right: 40%; transform: rotate(5deg); z-index: 3; }
+        .hero-img-3, .hero-img-skel:nth-child(3) { width: 140px; height: 140px; bottom: 2%; right: 6%; transform: rotate(-3deg); z-index: 1; }
+        .hero-img-skel { animation: shimmer 1.5s infinite; background: linear-gradient(90deg, #eee 25%, #ddd 50%, #eee 75%); background-size: 200% 100%; }
+        .hero-visual-fallback { display: flex; align-items: center; justify-content: center; height: 100%; font-size: 64px; color: var(--black); position: relative; z-index: 1; }
 
-        .hero-card {
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-            border-radius: var(--radius-lg);
-            padding: 60px;
-            display: flex;
-            align-items: center;
-            color: white;
-            position: relative;
-            overflow: hidden;
-            min-height: 450px;
+        /* ===== Products ===== */
+        .products-section { max-width: 1280px; margin: 0 auto; padding: 50px 20px 60px; }
+        .section-title {
+            font-size: 26px; font-weight: 900; margin-bottom: 32px; position: relative; display: inline-flex;
+            align-items: center; gap: 10px; padding-bottom: 10px;
         }
+        .section-title::after { content: ''; position: absolute; right: 0; bottom: 0; height: 3px; width: 56px; background: var(--black); }
 
-        .hero-card::before {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
-            top: -100px;
-            left: -100px;
-        }
-
-        .hero-content { flex: 1; z-index: 1; }
-        .hero-content h1 { font-size: 52px; font-weight: 900; line-height: 1.2; margin-bottom: 20px; }
-        .hero-content p { font-size: 18px; opacity: 0.9; margin-bottom: 35px; max-width: 500px; }
-
-        .hero-btn {
-            padding: 16px 40px;
-            background: var(--white);
-            color: var(--text-main);
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 800;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
-        }
-
-        .hero-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-
-        .hero-visual {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            position: relative;
-        }
-
-        .hero-image-main {
-            width: 380px;
-            height: 380px;
-            object-fit: cover;
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-            animation: blobby 10s infinite alternate;
-            border: 8px solid rgba(255,255,255,0.1);
-        }
-
-        @keyframes blobby {
-            0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
-            100% { border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%; }
-        }
-
-        /* ===== Categories ===== */
-        .cats-bar {
-            padding: 20px 25px;
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .cat-chip {
-            padding: 10px 24px;
-            background: var(--white);
-            border: 1px solid #e2e8f0;
-            border-radius: 50px;
-            white-space: nowrap;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .cat-chip.active, .cat-chip:hover {
-            background: var(--text-main);
-            color: white;
-            border-color: var(--text-main);
-        }
-
-        /* ===== Product Cards ===== */
-        .products-section { max-width: 1400px; margin: 0 auto; padding: 20px 25px 80px; }
-        .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
-        .section-header h2 { font-size: 28px; font-weight: 800; }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-        }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
 
         .product-card {
-            background: var(--white);
-            border-radius: var(--radius-md);
-            padding: 15px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid #f1f5f9;
-            position: relative;
+            background: white; border-radius: var(--radius); overflow: hidden; border: 1.5px solid var(--gray-border);
+            position: relative; opacity: 0; transform: translateY(26px);
+            transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .product-card.visible { opacity: 1; transform: translateY(0); }
+        .product-card:hover, .product-card:focus-within { border-color: var(--black); box-shadow: var(--shadow); transform: translateY(-6px); }
+
+        .product-image { position: relative; height: 220px; overflow: hidden; background: var(--gray-bg); }
+        .product-image-link { display: block; width: 100%; height: 100%; }
+        .product-image img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: filter 0.4s ease, transform 0.4s ease; }
+        .product-card:hover .product-image img, .product-card:focus-within .product-image img { filter: grayscale(0); transform: scale(1.06); }
+
+        .product-tag { position: absolute; top: 12px; right: 12px; background: var(--black); color: white; font-size: 11px; font-weight: 700; padding: 5px 13px; border-radius: 20px; pointer-events: none; }
+
+        .product-fav {
+            position: absolute; top: 12px; left: 12px; width: 38px; height: 38px; border-radius: 50%;
+            border: 2px solid var(--black); background: white; color: var(--black);
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+        .product-fav:hover, .product-fav.active { background: var(--danger); border-color: var(--danger); color: white; }
+
+        .product-badge { position: absolute; bottom: 12px; right: 12px; background: var(--black); color: white; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 20px; pointer-events: none; }
+        .product-badge.out-of-stock { background: var(--danger); }
+
+        .product-info { padding: 18px; }
+        .product-name { font-size: 17px; font-weight: 800; margin-bottom: 8px; line-height: 1.4; }
+        .product-name a { text-decoration: none; }
+        .product-name a:hover { text-decoration: underline; }
+        .product-desc {
+            font-size: 13.5px; color: var(--gray-text); margin-bottom: 16px; line-height: 1.5;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .product-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .product-price-chip { background: white; border: 2px solid var(--black); color: var(--black); font-weight: 900; font-size: 16px; padding: 6px 15px; border-radius: 20px; }
+        .product-price-chip span { font-size: 12px; font-weight: 600; color: var(--gray-text); }
+
+        .add-to-cart {
+            width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--black);
+            background: var(--black); color: white; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 16px; transition: background-color 0.2s ease, color 0.2s ease; flex-shrink: 0;
+        }
+        .add-to-cart:hover { background: white; color: var(--black); }
+        .add-to-cart.pulse { animation: addPulse 0.4s ease; }
+        .add-to-cart:disabled, .add-to-cart[aria-disabled="true"] { opacity: 0.35; cursor: not-allowed; background: var(--gray-text); border-color: var(--gray-text); }
+        @keyframes addPulse { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
+        /* ===== Empty / error states (shared by products grid + others) ===== */
+        .empty-state { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--gray-text); }
+        .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.6; }
+        .empty-state h3 { color: var(--black); margin-bottom: 8px; font-size: 18px; }
+
+        /* ===== Skeleton loading (mirrors real card layout to avoid layout shift) ===== */
+        .skeleton-card { border-radius: var(--radius); overflow: hidden; border: 1.5px solid var(--gray-border); }
+        .skeleton-card .sk-image { height: 220px; }
+        .skeleton-card .sk-line { height: 14px; margin: 14px 18px; border-radius: 7px; }
+        .skeleton-card .sk-line.short { width: 60%; }
+        .sk-image, .sk-line, .skeleton {
+            background: linear-gradient(90deg, #eee 25%, #ddd 50%, #eee 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* ===== Footer ===== */
+        .footer { background: var(--black); color: white; padding: 50px 20px 0; }
+        .footer-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 36px; padding-bottom: 36px; }
+        .footer-col h4 { font-size: 15px; font-weight: 800; margin-bottom: 18px; color: white; display: inline-block; border-bottom: 2px solid white; padding-bottom: 6px; }
+        .footer-logo { height: 38px; width: auto; margin-bottom: 14px; object-fit: contain; filter: brightness(0) invert(1); }
+        .footer-col p, .footer-col a { color: #b3b3b3; font-size: 14px; line-height: 1.8; text-decoration: none; display: block; }
+        .footer-about { max-width: 320px; margin-bottom: 18px; }
+        .footer-links ul { list-style: none; }
+        .footer-links a { margin-bottom: 10px; transition: color 0.2s ease; }
+        .footer-links a:hover { color: white; }
+        .footer-contact p { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+        .footer-contact i { color: white; margin-top: 2px; width: 16px; text-align: center; }
+        .footer-social { display: flex; gap: 10px; }
+        .social-btn { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; color: white; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .social-btn.facebook { background: #1877f2; }
+        .social-btn.whatsapp { background: #25D366; }
+        .social-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(255,255,255,0.15); }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.15); padding: 18px 20px; text-align: center; }
+        .footer-bottom p { color: #8a8a8a; font-size: 13px; }
+
+        /* ===== Floating WhatsApp ===== */
+        .whatsapp-float {
+            position: fixed; bottom: 24px; right: 24px; width: 58px; height: 58px; background: #25D366;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;
+            font-size: 28px; box-shadow: 0 6px 18px rgba(37,211,102,0.5); z-index: 1500; text-decoration: none;
+            animation: waPulse 2.4s infinite;
+        }
+        .whatsapp-float:hover { transform: scale(1.08); }
+        @keyframes waPulse {
+            0% { box-shadow: 0 6px 18px rgba(37,211,102,0.5), 0 0 0 0 rgba(37,211,102,0.5); }
+            70% { box-shadow: 0 6px 18px rgba(37,211,102,0.5), 0 0 0 14px rgba(37,211,102,0); }
+            100% { box-shadow: 0 6px 18px rgba(37,211,102,0.5), 0 0 0 0 rgba(37,211,102,0); }
         }
 
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary);
+        /* ===== Toast ===== */
+        .toast-container { position: fixed; bottom: 24px; left: 24px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; max-width: calc(100vw - 48px); }
+        .toast { background: var(--black); color: white; padding: 14px 20px; border-radius: 14px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow); animation: toastIn 0.3s ease; min-width: 280px; transition: opacity 0.3s ease, transform 0.3s ease; }
+        .toast.toast-out { opacity: 0; transform: translateX(-12px); }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .toast.success { border-right: 4px solid var(--success); }
+        .toast.error { border-right: 4px solid var(--danger); }
+
+        /* ===== Mobile ===== */
+        @media (max-width: 900px) {
+            .hero-inner { flex-direction: column; text-align: center; }
+            .hero-text p { margin: 0 auto 26px; }
+            .hero-visual { width: 100%; max-width: 320px; }
         }
-
-        .img-wrapper {
-            width: 100%;
-            height: 220px;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            background: #f8fafc;
-            position: relative;
-        }
-
-        .img-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
-        }
-
-        .product-card:hover .img-wrapper img { transform: scale(1.1); }
-
-        .fav-btn {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.9);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.3s;
-            z-index: 2;
-        }
-
-        .fav-btn.active { color: #ef4444; }
-
-        .content { padding: 15px 5px; }
-        .cat-name { font-size: 12px; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        .p-name { font-size: 18px; font-weight: 800; margin-bottom: 8px; color: var(--text-main); }
-        
-        .p-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #f1f5f9;
-        }
-
-        .price { font-size: 20px; font-weight: 900; color: var(--text-main); }
-        .price span { font-size: 12px; font-weight: 600; color: var(--text-muted); }
-
-        .add-btn {
-            background: var(--text-main);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-family: 'Cairo';
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .add-btn:hover { background: var(--primary); transform: scale(1.05); }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .hero-card { padding: 30px; flex-direction: column; text-align: center; }
-            .hero-content h1 { font-size: 32px; }
-            .hero-visual { display: none; }
-            .search-container { order: 3; max-width: 100%; }
-            .header-main { flex-wrap: wrap; }
-            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
-            .product-card { padding: 10px; }
-            .img-wrapper { height: 160px; }
-            .p-name { font-size: 14px; }
+            .header-inner { flex-wrap: wrap; }
+            .search-bar { order: 3; max-width: 100%; width: 100%; }
+            .hero { padding: 40px 16px 32px; }
+            .hero-text p { font-size: 14px; }
+            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+            .product-image, .skeleton-card .sk-image { height: 150px; }
+            .product-info { padding: 14px; }
+            .product-name { font-size: 14px; }
+            .product-price-chip { font-size: 13px; padding: 5px 12px; }
+            .add-to-cart { width: 38px; height: 38px; font-size: 14px; }
+            .auth-section { gap: 4px; }
+            .user-name { display: none !important; }
+            .footer-inner { grid-template-columns: 1fr; gap: 28px; text-align: center; }
+            .footer-about { margin: 0 auto 18px; }
+            .footer-social { justify-content: center; }
+            .footer-contact p { justify-content: center; }
+            .whatsapp-float { width: 52px; height: 52px; font-size: 25px; bottom: 18px; right: 18px; }
+        }
+        @media (max-width: 480px) {
+            .products-grid { grid-template-columns: 1fr; }
+            .product-image, .skeleton-card .sk-image { height: 220px; }
+            .product-name { font-size: 17px; }
+            .product-desc { font-size: 14px; }
+            .product-price-chip { font-size: 16px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+                scroll-behavior: auto !important;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header class="header-wrapper">
-        <div class="header-main">
+    <a href="#main-content" class="skip-link">تخطى إلى المحتوى الرئيسي</a>
+
+    <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+            <span><i class="fas fa-snowflake"></i> توصيل سريع لكل المحافظات</span>
+            <span><i class="fas fa-snowflake"></i> جودة مضمونة 100%</span>
+            <span><i class="fas fa-snowflake"></i> دفع عند الاستلام</span>
+            <span><i class="fas fa-snowflake"></i> عروض يومية جديدة</span>
+            <span><i class="fas fa-snowflake"></i> توصيل سريع لكل المحافظات</span>
+            <span><i class="fas fa-snowflake"></i> جودة مضمونة 100%</span>
+            <span><i class="fas fa-snowflake"></i> دفع عند الاستلام</span>
+            <span><i class="fas fa-snowflake"></i> عروض يومية جديدة</span>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="header-inner">
             <a href="index.html" class="logo">
-                <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop">
+                <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop" width="160" height="44">
             </a>
 
-            <div class="search-container">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="بتدور على إيه النهاردة؟" oninput="searchProducts()">
-            </div>
+            <form class="search-bar" id="searchForm" role="search">
+                <label for="searchInput" class="visually-hidden">ابحث عن منتج</label>
+                <input type="text" id="searchInput" placeholder="ابحث عن منتج..." autocomplete="off">
+                <button class="search-btn" type="submit" aria-label="بحث"><i class="fas fa-search" aria-hidden="true"></i></button>
+            </form>
 
-            <div class="actions">
-                <a href="favorites.html" class="btn-icon">
-                    <i class="far fa-heart"></i>
-                    <span class="badge" id="favBadge" style="display:none;">0</span>
+            <div class="auth-section">
+                <span class="user-name" id="userNameDisplay"></span>
+                <a href="login.html" class="login-btn" id="loginBtn">
+                    <i class="fas fa-user" aria-hidden="true"></i>
+                    <span>دخول</span>
                 </a>
-                <a href="cart.html" class="btn-icon">
-                    <i class="fas fa-shopping-basket"></i>
-                    <span class="badge" id="cartBadge" style="display:none;">0</span>
-                </a>
-                <a href="login.html" class="btn-icon" id="userBtn">
-                    <i class="far fa-user"></i>
-                </a>
+                <button class="logout-btn" id="logoutBtn" type="button">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                    <span>خروج</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <main>
+    <nav class="categories-nav" id="categoriesNav" aria-label="فئات المنتجات">
+        <div class="categories-nav-inner">
+            <button class="category-link" type="button" data-category="all" aria-pressed="true">
+                <i class="fas fa-bars" aria-hidden="true"></i> كل الفئات
+            </button>
+            <div class="categories-links" id="categoriesGrid"></div>
+            <div class="nav-icons">
+                <a href="favorites.html" class="header-btn" aria-label="المفضلة">
+                    <i class="fas fa-heart" aria-hidden="true"></i>
+                    <span class="badge" id="favBadge" style="display:none;">0</span>
+                </a>
+                <a href="cart.html" class="header-btn" aria-label="السلة">
+                    <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                    <span class="badge" id="cartBadge" style="display:none;">0</span>
+                </a>
+                <a href="orders.html" class="header-btn" aria-label="طلباتي">
+                    <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content">
         <section class="hero">
-            <div class="hero-card">
-                <div class="hero-content">
-                    <h1>أكل طازة.. <br> بلمسة من التجميد.</h1>
-                    <p>أجود أنواع الخضروات، اللحوم، والوجبات الجاهزة توصلك لحد باب البيت بجودة السوبر ماركت وأفضل.</p>
-                    <a href="#products" class="hero-btn">
-                        تسوق الآن
-                        <i class="fas fa-arrow-left"></i>
-                    </a>
+            <div class="hero-inner">
+                <div class="hero-text">
+                    <h1>
+                        <span class="reveal-line d1">أطعمة مجمدة.</span>
+                        <span class="reveal-line d2">جودة <span class="accent">لا تقبل المساومة</span>.</span>
+                    </h1>
+                    <p class="reveal-line d3">اطلب دلوقتي واستلم في أسرع وقت، بضمان الجودة والطعم في كل مرة.</p>
+                    <a href="#productsSection" class="hero-cta reveal-line d3"><i class="fas fa-cart-shopping" aria-hidden="true"></i> تصفح المنتجات</a>
                 </div>
-                <div class="hero-visual" id="heroVisual">
-                    <!-- الصور هتتحط هنا بالـ JS -->
+                <div class="hero-visual" id="heroVisual" aria-hidden="true">
+                    <div class="hero-img-skel"></div>
+                    <div class="hero-img-skel"></div>
+                    <div class="hero-img-skel"></div>
                 </div>
             </div>
         </section>
 
-        <nav class="cats-bar" id="categoriesGrid">
-            <button class="cat-chip active" onclick="filterCategory('all')">الكل</button>
-        </nav>
-
-        <section class="products-section" id="products">
-            <div class="section-header">
-                <h2>أحدث المنتجات</h2>
-            </div>
-            <div class="products-grid" id="productsGrid">
-                <!-- المنتجات هنا -->
+        <section class="products-section" id="productsSection">
+            <h2 class="section-title"><i class="fas fa-fire" aria-hidden="true"></i> المنتجات</h2>
+            <div class="products-grid" id="productsGrid" aria-live="polite" aria-busy="true">
+                <div class="skeleton-card"><div class="sk-image"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+                <div class="skeleton-card"><div class="sk-image"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+                <div class="skeleton-card"><div class="sk-image"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+                <div class="skeleton-card"><div class="sk-image"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
             </div>
         </section>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-col">
+                <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop" class="footer-logo" width="160" height="38">
+                <p class="footer-about">FrozenShop بيوصلك أشهى الأطعمة المجمدة بجودة عالية وأسعار ممتازة، مباشرة لباب البيت.</p>
+                <div class="footer-social">
+                    <a href="https://facebook.com/frozenshop" class="social-btn facebook" aria-label="فيسبوك"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                    <a href="https://wa.me/201000000000" class="social-btn whatsapp" aria-label="واتساب"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+                </div>
+            </div>
+            <div class="footer-col footer-links">
+                <h4>روابط سريعة</h4>
+                <ul>
+                    <li><a href="index.html">الرئيسية</a></li>
+                    <li><a href="favorites.html">المفضلة</a></li>
+                    <li><a href="cart.html">السلة</a></li>
+                    <li><a href="orders.html">طلباتي</a></li>
+                </ul>
+            </div>
+            <div class="footer-col footer-contact">
+                <h4>تواصل معنا</h4>
+                <p><i class="fas fa-location-dot" aria-hidden="true"></i> القاهرة، مصر</p>
+                <p><i class="fas fa-phone" aria-hidden="true"></i> 01000000000</p>
+                <p><i class="fas fa-clock" aria-hidden="true"></i> يوميًا من 9 صباحًا حتى 12 منتصف الليل</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 FrozenShop - جميع الحقوق محفوظة</p>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/201000000000" class="whatsapp-float" aria-label="تواصل معنا على واتساب">
+        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+    </a>
+
+    <!-- Supabase SDK pinned to an exact version — a floating "@2" tag can
+         silently pull in breaking changes on any future cache refresh. -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.108.2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/utils.js"></script>
     <script>
-        const SUPABASE_URL = 'https://ufmzgobtjtetrxvewvxl.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_DEZTCSDOUIcSzs_t0tOAqA_HVOdy8As';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        (function () {
+            const sb = window.sb;
+            const {
+                escapeHTML, debounce, safeGetJSON, safeSetJSON, safeRemove,
+                migrateLegacyKey, showToast, emptyStateHTML, PLACEHOLDER_IMG,
+            } = window.fsUtils;
 
-        let allProducts = [];
-        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
-        async function init() {
-            await loadCategories();
-            await loadProducts();
-            updateBadges();
-        }
-
-        async function loadCategories() {
-            const { data } = await supabase.from('categories').select('*');
-            if (data) {
-                const grid = document.getElementById('categoriesGrid');
-                data.forEach(cat => {
-                    grid.innerHTML += `<button class="cat-chip" onclick="filterCategory('${cat.name}', this)">${cat.name}</button>`;
-                });
+            if (!sb) {
+                console.error('Supabase client unavailable — check script load order.');
+                return;
             }
-        }
 
-        async function loadProducts() {
-            const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
-            if (data) {
-                allProducts = data;
-                renderProducts(data);
-                if(data.length > 0) {
-                    document.getElementById('heroVisual').innerHTML = `<img src="${data[0].image_url}" class="hero-image-main">`;
+            // Carry over data saved under the old, unprefixed keys.
+            migrateLegacyKey('cart', 'fs_cart');
+            migrateLegacyKey('favorites', 'fs_favorites');
+
+            let currentUser = null;
+            let allProducts = [];
+            let allCategories = [];
+            let favorites = normalizeIdArray(safeGetJSON('fs_favorites', []));
+            let cart = normalizeCart(safeGetJSON('fs_cart', []));
+            let currentCategory = 'all';
+            let revealObserver = null;
+
+            function normalizeIdArray(value) {
+                return Array.isArray(value) ? value : [];
+            }
+            function normalizeCart(value) {
+                if (!Array.isArray(value)) return [];
+                return value.filter((item) => item && item.id != null && Number.isFinite(Number(item.qty)));
+            }
+            // null = stock not tracked for this product (treat as unlimited).
+            function parseStock(raw) {
+                if (raw === null || raw === undefined || raw === '') return null;
+                const n = Number(raw);
+                return Number.isFinite(n) ? n : null;
+            }
+
+            async function init() {
+                setupRevealObserver();
+                await checkAuth();
+                // Categories and products are independent requests — fetch
+                // them in parallel instead of serially.
+                await Promise.all([loadCategories(), loadProducts()]);
+                updateBadges();
+            }
+
+            /* ---------------- reveal-on-scroll ---------------- */
+            function setupRevealObserver() {
+                revealObserver = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            revealObserver.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.12 });
+            }
+            function observeReveals() {
+                document.querySelectorAll('.product-card:not(.visible)').forEach((el) => revealObserver.observe(el));
+            }
+
+            /* ---------------- auth ---------------- */
+            // NOTE: this checks the real Supabase Auth session via
+            // sb.auth.getSession(), not a self-reported localStorage flag.
+            // A plain "localStorage.setItem('user', ...)" can no longer log
+            // someone in. The cached display name below is purely a fast
+            // first-paint hint, not a trust boundary.
+            async function checkAuth() {
+                const cachedName = safeGetJSON('fs_user_name', null);
+                renderAuthUI(cachedName);
+
+                try {
+                    const { data, error } = await sb.auth.getSession();
+                    if (error) throw error;
+                    const user = data && data.session ? data.session.user : null;
+                    currentUser = user || null;
+                    if (user) {
+                        const displayName = (user.user_metadata && user.user_metadata.full_name)
+                            || (user.email ? user.email.split('@')[0] : 'مستخدم');
+                        safeSetJSON('fs_user_name', displayName);
+                        renderAuthUI(displayName);
+                    } else {
+                        safeRemove('fs_user_name');
+                        renderAuthUI(null);
+                    }
+                } catch (err) {
+                    console.error('Auth session check failed:', err);
+                    currentUser = null;
+                    safeRemove('fs_user_name');
+                    renderAuthUI(null);
                 }
             }
-        }
 
-        function renderProducts(list) {
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = list.map(p => `
-                <div class="product-card">
-                    <button class="fav-btn ${favorites.includes(p.id) ? 'active' : ''}" onclick="toggleFav(${p.id})">
-                        <i class="${favorites.includes(p.id) ? 'fas' : 'far'} fa-heart"></i>
-                    </button>
-                    <div class="img-wrapper" onclick="window.location.href='product-detail.html?id=${p.id}'">
-                        <img src="${p.image_url}" alt="${p.name}">
-                    </div>
-                    <div class="content">
-                        <span class="cat-name">${p.category}</span>
-                        <h3 class="p-name">${p.name}</h3>
-                        <div class="p-footer">
-                            <div class="price">${p.price} <span>ج.م</span></div>
-                            <button class="add-btn" onclick="addToCart(${p.id})">أضف للسلة</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
+            function renderAuthUI(displayName) {
+                const loginBtn = document.getElementById('loginBtn');
+                const logoutBtn = document.getElementById('logoutBtn');
+                const userNameDisplay = document.getElementById('userNameDisplay');
 
-        function filterCategory(cat, btn) {
-            document.querySelectorAll('.cat-chip').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-            
-            if(cat === 'all') renderProducts(allProducts);
-            else renderProducts(allProducts.filter(p => p.category === cat));
-        }
+                if (displayName) {
+                    loginBtn.style.display = 'none';
+                    logoutBtn.style.display = 'inline-flex';
+                    userNameDisplay.style.display = 'inline';
+                    userNameDisplay.textContent = displayName; // textContent only — never innerHTML
+                } else {
+                    loginBtn.style.display = 'inline-flex';
+                    logoutBtn.style.display = 'none';
+                    userNameDisplay.style.display = 'none';
+                    userNameDisplay.textContent = '';
+                }
+            }
 
-        function searchProducts() {
-            const q = document.getElementById('searchInput').value.toLowerCase();
-            renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(q)));
-        }
+            async function logout() {
+                if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+                try {
+                    await sb.auth.signOut();
+                } catch (err) {
+                    console.error('Sign-out request failed:', err);
+                }
+                safeRemove('fs_user_name');
+                safeRemove('fs_cart');
+                safeRemove('fs_favorites');
+                window.location.reload();
+            }
 
-        function updateBadges() {
-            document.getElementById('cartBadge').textContent = cart.length;
-            document.getElementById('cartBadge').style.display = cart.length ? 'flex' : 'none';
-            document.getElementById('favBadge').textContent = favorites.length;
-            document.getElementById('favBadge').style.display = favorites.length ? 'flex' : 'none';
-        }
+            function requireAuth(message) {
+                if (currentUser) return true;
+                showToast(message || 'يرجى تسجيل الدخول أولاً', 'error');
+                setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+                return false;
+            }
 
-        function addToCart(id) {
-            const prod = allProducts.find(p => p.id === id);
-            cart.push(prod);
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateBadges();
-            alert('تمت الإضافة للسلة');
-        }
+            /* ---------------- categories ---------------- */
+            async function loadCategories() {
+                try {
+                    const { data, error } = await sb
+                        .from('categories')
+                        .select('id, name, icon')
+                        .order('name', { ascending: true });
+                    if (error) throw error;
+                    allCategories = data || [];
+                    renderCategories();
+                } catch (err) {
+                    console.error('Categories error:', err);
+                    // Non-fatal: the storefront still works with "All" only.
+                    document.getElementById('categoriesGrid').innerHTML = '';
+                }
+            }
 
-        function toggleFav(id) {
-            if(favorites.includes(id)) favorites = favorites.filter(f => f !== id);
-            else favorites.push(id);
-            localStorage.setItem('favorites', JSON.stringify(favorites));
-            updateBadges();
-            renderProducts(allProducts);
-        }
+            function renderCategories() {
+                const grid = document.getElementById('categoriesGrid');
+                grid.innerHTML = '';
+                allCategories.forEach((c) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'category-link';
+                    btn.dataset.category = c.name; // property assignment — not string-built HTML, so it can't break out of a tag
+                    btn.setAttribute('aria-pressed', 'false');
 
-        init();
+                    const icon = document.createElement('i');
+                    icon.setAttribute('aria-hidden', 'true');
+                    // Only accept icon values that look like real Font Awesome
+                    // class lists; anything else falls back to a generic tag
+                    // icon instead of being trusted as-is.
+                    icon.className = /^[a-z0-9\s-]+$/i.test(c.icon || '') ? c.icon : 'fas fa-tag';
+
+                    btn.appendChild(icon);
+                    btn.appendChild(document.createTextNode(' ' + (c.name || '')));
+                    grid.appendChild(btn);
+                });
+            }
+
+            function filterCategory(cat, triggerEl) {
+                currentCategory = cat;
+                document.querySelectorAll('.category-link').forEach((el) => el.setAttribute('aria-pressed', 'false'));
+                if (triggerEl) triggerEl.setAttribute('aria-pressed', 'true');
+                renderProducts();
+            }
+
+            // One delegated listener handles the static "All" button AND
+            // every dynamically-rendered category button — no inline
+            // onclick="..." strings, no reliance on the global `event` object.
+            document.getElementById('categoriesNav').addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-category]');
+                if (!btn) return;
+                filterCategory(btn.dataset.category, btn);
+            });
+
+            /* ---------------- products ---------------- */
+            async function loadProducts() {
+                const grid = document.getElementById('productsGrid');
+                try {
+                    const { data, error } = await sb
+                        .from('products')
+                        .select('id, name, description, price, image_url, category, stock, created_at')
+                        .order('created_at', { ascending: false });
+                    if (error) throw error;
+                    allProducts = data || [];
+                    grid.setAttribute('aria-busy', 'false');
+                    renderProducts();
+                    populateHeroVisual();
+                } catch (err) {
+                    console.error('Products error:', err);
+                    grid.setAttribute('aria-busy', 'false');
+                    grid.innerHTML = emptyStateHTML({
+                        icon: 'fa-triangle-exclamation',
+                        title: 'تعذر تحميل المنتجات',
+                        subtitle: 'تحقق من اتصالك بالإنترنت وحاول مرة أخرى.',
+                    });
+                }
+            }
+
+            function populateHeroVisual() {
+                const visual = document.getElementById('heroVisual');
+                const featured = allProducts.filter((p) => p.image_url).slice(0, 3);
+                visual.innerHTML = '';
+                if (featured.length === 0) {
+                    visual.innerHTML = '<div class="hero-visual-fallback"><i class="fas fa-snowflake" aria-hidden="true"></i></div>';
+                    return;
+                }
+                featured.forEach((p, i) => {
+                    const img = document.createElement('img');
+                    img.src = p.image_url;
+                    img.alt = ''; // decorative — the headline already carries the message
+                    img.className = `hero-img hero-img-${i + 1}`;
+                    img.loading = i === 0 ? 'eager' : 'lazy';
+                    if (i === 0) img.setAttribute('fetchpriority', 'high');
+                    img.onerror = function () { this.style.display = 'none'; };
+                    visual.appendChild(img);
+                });
+            }
+
+            function getFilteredProducts() {
+                let filtered = allProducts;
+                if (currentCategory !== 'all') {
+                    filtered = filtered.filter((p) => p.category === currentCategory);
+                }
+                const searchTerm = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+                if (searchTerm) {
+                    filtered = filtered.filter((p) => {
+                        const name = (p.name || '').toLowerCase();
+                        const desc = (p.description || '').toLowerCase();
+                        return name.includes(searchTerm) || desc.includes(searchTerm);
+                    });
+                }
+                return filtered;
+            }
+
+            function renderProducts() {
+                const grid = document.getElementById('productsGrid');
+                const filtered = getFilteredProducts();
+
+                // Detach old cards from the observer BEFORE innerHTML throws
+                // them away. Without this, the observer keeps a live
+                // reference to detached nodes that will never intersect
+                // again — a real memory leak on every filter/search change.
+                revealObserver.disconnect();
+
+                if (filtered.length === 0) {
+                    grid.innerHTML = emptyStateHTML({
+                        icon: 'fa-magnifying-glass',
+                        title: 'لا توجد منتجات',
+                        subtitle: 'جرّب كلمة بحث أخرى أو فئة مختلفة.',
+                    });
+                    return;
+                }
+
+                grid.innerHTML = filtered.map((p, i) => {
+                    const id = String(p.id);
+                    const idAttr = escapeHTML(id);
+                    const idUrl = encodeURIComponent(id);
+                    const name = escapeHTML(p.name || 'منتج');
+                    const desc = escapeHTML(p.description || '');
+                    const category = escapeHTML(p.category || 'عام');
+                    // Supabase returns `numeric`/`decimal` columns as STRINGS,
+                    // not numbers — calling .toFixed() directly on p.price
+                    // throws for any product using that column type. Always
+                    // coerce through Number() first.
+                    const price = (Number(p.price) || 0).toFixed(2);
+                    const stock = parseStock(p.stock);
+                    const isFav = favorites.some((f) => String(f) === id);
+                    const delay = (i % 8) * 60;
+                    const imgSrc = p.image_url ? escapeHTML(p.image_url) : PLACEHOLDER_IMG;
+
+                    let stockBadge = '';
+                    let cartDisabled = '';
+                    let cartLabel = `أضف ${name} للسلة`;
+                    if (stock !== null && stock <= 0) {
+                        stockBadge = '<span class="product-badge out-of-stock">نفذ من المخزون</span>';
+                        cartDisabled = 'disabled aria-disabled="true"';
+                        cartLabel = `${name} غير متوفر حاليًا`;
+                    } else if (stock !== null && stock <= 5) {
+                        stockBadge = `<span class="product-badge">${stock} متبقي فقط!</span>`;
+                    }
+
+                    return `
+                        <article class="product-card" style="transition-delay:${delay}ms">
+                            <div class="product-image">
+                                <a class="product-image-link" href="product-detail.html?id=${idUrl}" data-action="view-product" data-id="${idAttr}" aria-label="عرض تفاصيل ${name}">
+                                    <img src="${imgSrc}" alt="" loading="lazy" decoding="async" onerror="this.src='${PLACEHOLDER_IMG}'">
+                                </a>
+                                <span class="product-tag">${category}</span>
+                                <button class="product-fav ${isFav ? 'active' : ''}" type="button" data-action="toggle-fav" data-id="${idAttr}" aria-pressed="${isFav}" aria-label="${isFav ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}">
+                                    <i class="fas fa-heart" aria-hidden="true"></i>
+                                </button>
+                                ${stockBadge}
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-name"><a href="product-detail.html?id=${idUrl}" data-action="view-product" data-id="${idAttr}">${name}</a></h3>
+                                <p class="product-desc">${desc}</p>
+                                <div class="product-footer">
+                                    <div class="product-price-chip">${price} <span>ج.م</span></div>
+                                    <button class="add-to-cart" type="button" data-action="add-to-cart" data-id="${idAttr}" aria-label="${cartLabel}" ${cartDisabled}>
+                                        <i class="fas fa-plus" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
+
+                observeReveals();
+            }
+
+            // Single delegated listener for the entire grid: favorite toggle,
+            // add-to-cart, and the login gate on "view product" links.
+            // Replaces three different per-card inline onclick="..." strings
+            // that were rebuilt (and re-parsed) on every single render, and
+            // that broke outright for any non-numeric (e.g. UUID) product id.
+            document.getElementById('productsGrid').addEventListener('click', (e) => {
+                const favBtn = e.target.closest('[data-action="toggle-fav"]');
+                if (favBtn) { toggleFavorite(favBtn.dataset.id, favBtn); return; }
+
+                const cartBtn = e.target.closest('[data-action="add-to-cart"]');
+                if (cartBtn) { addToCart(cartBtn.dataset.id, cartBtn); return; }
+
+                const viewLink = e.target.closest('[data-action="view-product"]');
+                if (viewLink && !currentUser) {
+                    e.preventDefault();
+                    requireAuth('يرجى تسجيل الدخول أولاً لعرض تفاصيل المنتج');
+                }
+                // else: signed in — it's a real <a href>, let it navigate natively.
+            });
+
+            function findProduct(id) {
+                return allProducts.find((p) => String(p.id) === String(id));
+            }
+
+            function toggleFavorite(id, btnEl) {
+                if (!requireAuth()) return;
+                const product = findProduct(id);
+                const pid = product ? product.id : id;
+
+                const idx = favorites.findIndex((f) => String(f) === String(pid));
+                const nowFav = idx === -1;
+                if (nowFav) favorites.push(pid); else favorites.splice(idx, 1);
+
+                if (!safeSetJSON('fs_favorites', favorites)) {
+                    if (nowFav) favorites.pop(); else favorites.splice(idx, 0, pid);
+                    showToast('تعذر حفظ المفضلة', 'error');
+                    return;
+                }
+
+                showToast(nowFav ? 'تم الإضافة للمفضلة' : 'تم الإزالة من المفضلة', 'success');
+
+                // Update just this one button instead of re-rendering the
+                // whole grid for a single heart toggle.
+                if (btnEl) {
+                    btnEl.classList.toggle('active', nowFav);
+                    btnEl.setAttribute('aria-pressed', String(nowFav));
+                    btnEl.setAttribute('aria-label', nowFav ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة');
+                }
+                updateBadges();
+            }
+
+            function addToCart(id, btnEl) {
+                if (!requireAuth()) return;
+                const product = findProduct(id);
+                if (!product) return;
+
+                const stock = parseStock(product.stock);
+                if (stock !== null && stock <= 0) {
+                    showToast('هذا المنتج غير متوفر حاليًا', 'error');
+                    return;
+                }
+
+                const existing = cart.find((item) => String(item.id) === String(product.id));
+                if (existing) {
+                    if (stock !== null && existing.qty >= stock) {
+                        showToast(`الكمية القصوى المتاحة هي ${stock}`, 'error');
+                        return;
+                    }
+                    existing.qty += 1;
+                } else {
+                    // Store a minimal explicit snapshot — not the whole product
+                    // object — and only for *display* purposes in the cart UI.
+                    // The checkout/order-creation step must always re-fetch the
+                    // authoritative price server-side before charging; this
+                    // value lives in client-editable localStorage and must
+                    // never be trusted as the real price to bill.
+                    cart.push({
+                        id: product.id,
+                        name: product.name,
+                        price: Number(product.price) || 0,
+                        image_url: product.image_url || null,
+                        qty: 1,
+                    });
+                }
+
+                if (!safeSetJSON('fs_cart', cart)) {
+                    showToast('تعذر حفظ السلة، تحقق من مساحة التخزين', 'error');
+                    return;
+                }
+
+                showToast('تم الإضافة للسلة', 'success');
+                updateBadges();
+
+                if (btnEl) {
+                    btnEl.classList.add('pulse');
+                    setTimeout(() => btnEl.classList.remove('pulse'), 400);
+                }
+            }
+
+            function updateBadges() {
+                const cartCount = cart.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+                const cartBadge = document.getElementById('cartBadge');
+                cartBadge.textContent = String(cartCount);
+                cartBadge.style.display = cartCount > 0 ? 'flex' : 'none';
+
+                const favBadge = document.getElementById('favBadge');
+                favBadge.textContent = String(favorites.length);
+                favBadge.style.display = favorites.length > 0 ? 'flex' : 'none';
+            }
+
+            /* ---------------- search ---------------- */
+            const searchForm = document.getElementById('searchForm');
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', debounce(renderProducts, 250));
+            searchForm.addEventListener('submit', (e) => { e.preventDefault(); renderProducts(); });
+
+            /* ---------------- static buttons ---------------- */
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+
+            document.addEventListener('DOMContentLoaded', init);
+        })();
     </script>
 </body>
 </html>
