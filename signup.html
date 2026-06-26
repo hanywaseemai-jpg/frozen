@@ -1,229 +1,450 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إنشاء حساب جديد - FrozenShop</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الدخول - FrozenShop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-            --background-color: #0f172a;
-            --card-background: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --accent-color: #0891b2;
-        }
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --ink-soft:#1c1c1c;
+    --paper:#ffffff;
+    --mist:#f4f4f3;
+    --line:#e4e4e1;
+    --ash:#6f6f6c;
+  }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+  *{margin:0;padding:0;box-sizing:border-box;}
 
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+  body{
+    font-family:'Cairo',sans-serif;
+    background:var(--mist);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
 
-        .signup-container {
-            background: var(--card-background);
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            max-width: 450px;
-            width: 100%;
-        }
+  a{font-family:inherit;}
 
-        .logo-wrapper { text-align: center; margin-bottom: 20px; }
-        .logo-img { height: 65px; object-fit: contain; }
-        h1 { text-align: center; color: var(--text-main); font-size: 26px; font-weight: 800; margin-bottom: 8px; }
-        .subtitle { text-align: center; color: var(--text-muted); margin-bottom: 25px; font-size: 14px; font-weight: 600; }
-        .form-group { margin-bottom: 18px; }
-        label { display: block; margin-bottom: 8px; color: var(--text-main); font-weight: 700; font-size: 14px; }
-        .input-icon-wrapper { position: relative; }
+  /* Home button — fixed, always reachable */
+  .home-pill{
+    position:fixed;
+    top:24px;
+    right:24px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    color:var(--ink);
+    text-decoration:none;
+    font-weight:700;
+    font-size:13.5px;
+    padding:10px 18px;
+    border-radius:999px;
+    box-shadow:0 1px 2px rgba(0,0,0,.04);
+    transition:background .15s ease, color .15s ease, transform .15s ease;
+    z-index:10;
+  }
+  .home-pill:hover{background:var(--ink);color:#fff;transform:translateY(-1px);}
+  .home-pill i{font-size:13px;}
 
-        .input-icon-wrapper i {
-            position: absolute;
-            top: 50%;
-            right: 15px;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 16px;
-        }
+  .auth-shell{width:100%;max-width:940px;}
 
-        input {
-            width: 100%;
-            padding: 13px 45px 13px 15px;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 14px;
-            font-family: 'Cairo', sans-serif;
-            color: var(--text-main);
-            background-color: #f8fafc;
-            transition: all 0.3s ease;
-        }
+  .auth-card{
+    display:flex;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:22px;
+    overflow:hidden;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
 
-        input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1);
-        }
+  /* Dark brand panel with etched frost motif */
+  .auth-aside{
+    flex:0 0 38%;
+    background:var(--ink);
+    color:#fff;
+    position:relative;
+    padding:48px 36px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    overflow:hidden;
+    min-height:560px;
+  }
+  .frost-art{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    opacity:.5;
+  }
+  .logo-badge{
+    position:relative;
+    z-index:1;
+    display:inline-flex;
+    background:#fff;
+    border-radius:16px;
+    padding:14px 18px;
+    width:fit-content;
+  }
+  .logo-badge img{height:34px;display:block;object-fit:contain;}
+  .aside-copy{position:relative;z-index:1;}
+  .aside-tagline{
+    font-weight:600;
+    font-size:15px;
+    line-height:1.9;
+    color:rgba(255,255,255,.82);
+  }
 
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Cairo', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
-            margin-top: 10px;
-        }
+  .auth-panel{
+    flex:1;
+    padding:52px 48px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
 
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4); }
-        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
-        .login-link { text-align: center; margin-top: 25px; color: var(--text-muted); font-size: 14px; font-weight: 600; }
-        .login-link a { color: var(--accent-color); text-decoration: none; font-weight: 700; }
-        .login-link a:hover { text-decoration: underline; }
+  h1{font-size:25px;font-weight:800;color:var(--ink);margin-bottom:6px;}
+  .panel-subtitle{color:var(--ash);font-size:14px;font-weight:600;margin-bottom:26px;}
 
-        .alert {
-            padding: 14px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            display: none;
-            align-items: center;
-            gap: 10px;
-        }
-        .alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; display: flex; }
-        .alert-success { background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; display: flex; }
-        .loader { width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
-<base target="_blank">
+  .form-group{margin-bottom:18px;}
+  label{display:block;margin-bottom:7px;color:var(--ink);font-weight:700;font-size:13.5px;}
+  .input-icon-wrapper{position:relative;}
+  .input-icon-wrapper i{
+    position:absolute;top:50%;right:15px;transform:translateY(-50%);
+    color:var(--ash);font-size:15px;
+  }
+  input{
+    width:100%;
+    padding:13px 44px 13px 15px;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    font-size:14px;
+    font-family:'Cairo',sans-serif;
+    color:var(--ink);
+    background:var(--mist);
+    transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  input:focus{
+    outline:none;
+    border-color:var(--ink);
+    background:#fff;
+    box-shadow:0 0 0 3px rgba(10,10,10,.07);
+  }
+
+  .remember-forgot{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:24px;font-size:13.5px;font-weight:600;
+  }
+  .remember{display:flex;align-items:center;gap:7px;color:var(--ash);cursor:pointer;}
+  .remember input{width:auto;accent-color:var(--ink);cursor:pointer;}
+  .forgot-link{color:var(--ink);text-decoration:none;font-weight:700;background:none;border:none;font-family:inherit;font-size:13.5px;cursor:pointer;padding:0;}
+  .forgot-link:hover{text-decoration:underline;}
+
+  .btn{
+    width:100%;padding:14px;background:var(--ink);color:#fff;border:none;
+    border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;
+    font-family:'Cairo',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;
+    transition:background .15s ease, transform .15s ease;
+  }
+  .btn:hover{background:var(--ink-soft);transform:translateY(-1px);}
+  .btn:disabled{opacity:.65;cursor:not-allowed;transform:none;}
+
+  .panel-footer-links{text-align:center;margin-top:22px;color:var(--ash);font-size:13.5px;font-weight:600;}
+  .panel-footer-links a{color:var(--ink);text-decoration:none;font-weight:700;}
+  .panel-footer-links a:hover{text-decoration:underline;}
+
+  .link-back{
+    display:inline-flex;align-items:center;gap:6px;background:none;border:none;
+    color:var(--ash);font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;
+    cursor:pointer;padding:0;margin-bottom:18px;
+  }
+  .link-back:hover{color:var(--ink);}
+
+  .alert{
+    padding:13px 14px;border-radius:10px;margin-bottom:18px;font-size:13.5px;
+    font-weight:600;display:none;align-items:center;gap:10px;
+  }
+  .alert-error{background:#fef2f2;color:#991b1b;border:1px solid #fca5a5;display:flex;}
+  .alert-success{background:#ecfdf5;color:#065f46;border:1px solid #6ee7b7;display:flex;}
+  .loader{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top:2px solid #fff;border-radius:50%;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .trust-footer{
+    margin-top:30px;padding-top:20px;border-top:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    font-size:12.5px;color:var(--ash);flex-wrap:wrap;
+  }
+  .trust-footer a{color:var(--ash);text-decoration:none;font-weight:600;}
+  .trust-footer a:hover{color:var(--ink);}
+  .trust-footer .dot{color:var(--line);}
+  .trust-footer .contact-icons{display:inline-flex;gap:10px;}
+  .trust-footer .contact-icons a{font-size:15px;}
+
+  @media (max-width:860px){
+    .auth-card{flex-direction:column;border-radius:18px;}
+    .auth-aside{min-height:0;padding:30px 26px;}
+    .frost-art{opacity:.4;}
+    .logo-badge{padding:10px 14px;}
+    .logo-badge img{height:26px;}
+    .aside-tagline{font-size:13.5px;margin-top:14px;}
+    .auth-panel{padding:36px 26px;}
+    .home-pill{top:16px;right:16px;font-size:12.5px;padding:8px 14px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important;}
+  }
+</style>
 </head>
 <body>
 
-    <div class="signup-container">
-        <div class="logo-wrapper">
-            <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop Logo" class="logo-img">
+  <a href="index.html" class="home-pill"><i class="fas fa-house"></i> الرئيسية</a>
+
+  <div class="auth-shell">
+    <div class="auth-card">
+
+      <aside class="auth-aside">
+        <svg class="frost-art" viewBox="0 0 360 560" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="#ffffff" stroke-width="1.1" stroke-linecap="round" fill="none">
+            <g opacity="0.5" transform="translate(70,90)">
+              <line x1="0" y1="-46" x2="0" y2="46"/>
+              <line x1="-40" y1="-23" x2="40" y2="23"/>
+              <line x1="-40" y1="23" x2="40" y2="-23"/>
+              <line x1="0" y1="-34" x2="-12" y2="-44"/><line x1="0" y1="-34" x2="12" y2="-44"/>
+              <line x1="0" y1="34" x2="-12" y2="44"/><line x1="0" y1="34" x2="12" y2="44"/>
+              <line x1="-30" y1="-17" x2="-22" y2="-30"/><line x1="-30" y1="-17" x2="-18" y2="-6"/>
+              <line x1="30" y1="17" x2="22" y2="30"/><line x1="30" y1="17" x2="18" y2="6"/>
+            </g>
+            <g opacity="0.3" transform="translate(290,260) scale(0.6)">
+              <line x1="0" y1="-46" x2="0" y2="46"/>
+              <line x1="-40" y1="-23" x2="40" y2="23"/>
+              <line x1="-40" y1="23" x2="40" y2="-23"/>
+              <line x1="0" y1="-34" x2="-12" y2="-44"/><line x1="0" y1="-34" x2="12" y2="-44"/>
+              <line x1="0" y1="34" x2="-12" y2="44"/><line x1="0" y1="34" x2="12" y2="44"/>
+            </g>
+            <g opacity="0.4" transform="translate(110,430) scale(0.8)">
+              <line x1="0" y1="-46" x2="0" y2="46"/>
+              <line x1="-40" y1="-23" x2="40" y2="23"/>
+              <line x1="-40" y1="23" x2="40" y2="-23"/>
+              <line x1="-30" y1="-17" x2="-22" y2="-30"/><line x1="-30" y1="-17" x2="-18" y2="-6"/>
+              <line x1="30" y1="17" x2="22" y2="30"/><line x1="30" y1="17" x2="18" y2="6"/>
+            </g>
+          </g>
+        </svg>
+
+        <div class="logo-badge">
+          <img src="https://frozen-ordering.vercel.app/logo.png" alt="FrozenShop">
         </div>
 
-        <h1>إنشاء حساب جديد</h1>
-        <p class="subtitle">سجل الآن لتتمكن من تسوق أشهى المأكولات وتتبع طلباتك</p>
+        <div class="aside-copy">
+          <p class="aside-tagline">جودة تحافظ عليها البرودة، تصل طازجة لباب بيتك في أي وقت.</p>
+        </div>
+      </aside>
 
-        <div id="alertBox" class="alert"></div>
+      <div class="auth-panel">
 
-        <form id="signupForm" onsubmit="handleSignup(event)">
+        <!-- Login view -->
+        <div id="loginView">
+          <h1>تسجيل الدخول</h1>
+          <p class="panel-subtitle">أهلاً بك مجدداً في متجر الأطعمة المجمدة</p>
+
+          <div id="alertBox" class="alert" role="alert"></div>
+
+          <form id="loginForm" onsubmit="handleLogin(event)">
             <div class="form-group">
-                <label>الاسم الكامل</label>
-                <div class="input-icon-wrapper">
-                    <input type="text" id="fullName" required placeholder="الاسم الثنائي أو الثلاثي">
-                    <i class="fas fa-user"></i>
-                </div>
+              <label for="email">البريد الإلكتروني</label>
+              <div class="input-icon-wrapper">
+                <input type="email" id="email" required placeholder="example@email.com" autocomplete="email">
+                <i class="fas fa-envelope"></i>
+              </div>
             </div>
 
             <div class="form-group">
-                <label>البريد الإلكتروني</label>
-                <div class="input-icon-wrapper">
-                    <input type="email" id="email" required placeholder="name@example.com">
-                    <i class="fas fa-envelope"></i>
-                </div>
+              <label for="password">كلمة المرور</label>
+              <div class="input-icon-wrapper">
+                <input type="password" id="password" required placeholder="••••••••" autocomplete="current-password">
+                <i class="fas fa-lock"></i>
+              </div>
             </div>
 
-            <div class="form-group">
-                <label>كلمة المرور</label>
-                <div class="input-icon-wrapper">
-                    <input type="password" id="password" required placeholder="لا تقل عن 6 خانات">
-                    <i class="fas fa-lock"></i>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>تأكيد كلمة المرور</label>
-                <div class="input-icon-wrapper">
-                    <input type="password" id="confirmPassword" required placeholder="أعد إدخال كلمة المرور">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
+            <div class="remember-forgot">
+              <label class="remember">
+                <input type="checkbox" id="remember">
+                <span>تذكرني</span>
+              </label>
+              <button type="button" class="forgot-link" id="showForgotBtn">نسيت كلمة المرور؟</button>
             </div>
 
             <button type="submit" class="btn" id="submitBtn">
-                <i class="fas fa-user-plus"></i> إتمام التسجيل
+              <i class="fas fa-arrow-right-to-bracket"></i> دخول
             </button>
-        </form>
+          </form>
 
-        <div class="login-link">
-            لديك حساب بالفعل؟ <a href="login.html">سجل الدخول هنا</a>
+          <div class="panel-footer-links">
+            ليس لديك حساب؟ <a href="signup.html">سجل حساباً جديداً</a>
+          </div>
         </div>
+
+        <!-- Forgot password view -->
+        <div id="forgotView" hidden>
+          <button type="button" class="link-back" id="backToLoginBtn">
+            <i class="fas fa-arrow-right"></i> رجوع لتسجيل الدخول
+          </button>
+
+          <h1>إعادة تعيين كلمة المرور</h1>
+          <p class="panel-subtitle">أدخل بريدك الإلكتروني، وسنرسل لك رابط إعادة التعيين</p>
+
+          <div id="forgotAlertBox" class="alert" role="alert"></div>
+
+          <form id="forgotForm" onsubmit="handleForgotPassword(event)">
+            <div class="form-group">
+              <label for="resetEmail">البريد الإلكتروني</label>
+              <div class="input-icon-wrapper">
+                <input type="email" id="resetEmail" required placeholder="example@email.com" autocomplete="email">
+                <i class="fas fa-envelope"></i>
+              </div>
+            </div>
+
+            <button type="submit" class="btn" id="forgotSubmitBtn">
+              <i class="fas fa-paper-plane"></i> إرسال رابط إعادة التعيين
+            </button>
+          </form>
+        </div>
+
+        <div class="trust-footer">
+          <a href="privacy-policy.html">سياسة الخصوصية</a>
+          <span class="dot">•</span>
+          <a href="terms.html">الشروط والأحكام</a>
+          <span class="dot">•</span>
+          <span class="contact-icons">
+            <a href="tel:+201001234567" title="اتصل بنا"><i class="fas fa-phone"></i></a>
+            <a href="https://wa.me/201001234567" target="_blank" rel="noopener" title="واتساب"><i class="fab fa-whatsapp"></i></a>
+          </span>
+        </div>
+
+      </div>
     </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const SUPABASE_URL = 'https://ufmzgobtjtetrxvewvxl.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_DEZTCSDOUIcSzs_t0tOAqA_HVOdy8As';
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    // ---- Config — update with real values when ready ----
+    var ADMIN_EMAIL = 'kevin.hany.08@hotmail.com';
+    var PASSWORD_RESET_REDIRECT = window.location.origin + window.location.pathname.replace(/login\.html$/, 'reset-password.html');
 
-        // استخدم var بدل const عشان لو supabase متعرف قبل كده (من الـ CDN) مايحصلش SyntaxError
-        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    function redirectAfterLogin(email) {
+      var target = (email || '').toLowerCase() === ADMIN_EMAIL ? 'admin.html' : 'index.html';
+      window.location.href = target;
+    }
 
-        async function handleSignup(e) {
-            e.preventDefault();
-            const fullName = document.getElementById('fullName').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const btn = document.getElementById('submitBtn');
-            const alertBox = document.getElementById('alertBox');
+    window.addEventListener('load', function () {
+      FS.migrateLegacyKey('user');
+      FS.migrateLegacyKey('rememberMe');
 
-            alertBox.style.display = 'none';
-            alertBox.className = 'alert';
+      var savedUser = FS.getItem('user');
+      if (savedUser && savedUser.email) {
+        redirectAfterLogin(savedUser.email);
+      }
+    });
 
-            try {
-                if (password !== confirmPassword) throw new Error('كلمتا المرور غير متطابقتين.');
-                if (password.length < 6) throw new Error('يجب أن تتكون كلمة المرور من 6 خانات على الأقل.');
+    function toggleView(showForgot) {
+      document.getElementById('loginView').hidden = showForgot;
+      document.getElementById('forgotView').hidden = !showForgot;
+    }
+    document.getElementById('showForgotBtn').addEventListener('click', function () { toggleView(true); });
+    document.getElementById('backToLoginBtn').addEventListener('click', function () { toggleView(false); });
 
-                btn.disabled = true;
-                btn.innerHTML = '<span class="loader"></span> جاري إنشاء الحساب...';
+    async function handleLogin(e) {
+      e.preventDefault();
+      var email = document.getElementById('email').value.trim();
+      var password = document.getElementById('password').value;
+      var btn = document.getElementById('submitBtn');
+      var alertBox = document.getElementById('alertBox');
 
-                const { data, error } = await supabase.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: { data: { full_name: fullName } }
-                });
+      alertBox.style.display = 'none';
+      alertBox.className = 'alert';
 
-                if (error) throw error;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loader"></span> جاري التحقق من الحساب...';
 
-                alertBox.innerHTML = '<i class="fas fa-check-circle"></i> تم إنشاء حسابك بنجاح! جاري الانتقال لصفحة تسجيل الدخول...';
-                alertBox.classList.add('alert-success');
-                alertBox.style.display = 'flex';
+      try {
+        if (!email.includes('@')) throw new Error('صيغة البريد الإلكتروني غير صحيحة.');
+        if (password.length < 6) throw new Error('كلمة المرور يجب ألا تقل عن 6 أحرف.');
 
-                setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+        var result = await sb.auth.signInWithPassword({ email: email, password: password });
+        if (result.error) throw result.error;
 
-            } catch (err) {
-                alertBox.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${err.message}`;
-                alertBox.classList.add('alert-error');
-                alertBox.style.display = 'flex';
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-user-plus"></i> إتمام التسجيل';
-            }
+        var sessionUser = {
+          id: result.data.user.id,
+          email: result.data.user.email,
+          name: (result.data.user.user_metadata && result.data.user.user_metadata.full_name) || email.split('@')[0],
+          joinDate: result.data.user.created_at
+        };
+
+        FS.setItem('user', sessionUser);
+        if (document.getElementById('remember').checked) {
+          FS.setItem('rememberMe', true);
         }
-    </script>
+
+        alertBox.innerHTML = '<i class="fas fa-circle-check"></i> تم تسجيل الدخول بنجاح! جاري التوجيه...';
+        alertBox.classList.add('alert-success');
+        alertBox.style.display = 'flex';
+
+        setTimeout(function () { redirectAfterLogin(sessionUser.email); }, 1100);
+
+      } catch (err) {
+        alertBox.innerHTML = '<i class="fas fa-circle-exclamation"></i> ' + FS.escapeHTML(err.message || 'حدث خطأ غير متوقع.');
+        alertBox.classList.add('alert-error');
+        alertBox.style.display = 'flex';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> دخول';
+      }
+    }
+
+    async function handleForgotPassword(e) {
+      e.preventDefault();
+      var email = document.getElementById('resetEmail').value.trim();
+      var btn = document.getElementById('forgotSubmitBtn');
+      var alertBox = document.getElementById('forgotAlertBox');
+
+      alertBox.style.display = 'none';
+      alertBox.className = 'alert';
+
+      try {
+        if (!email.includes('@')) throw new Error('صيغة البريد الإلكتروني غير صحيحة.');
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loader"></span> جاري الإرسال...';
+
+        var result = await sb.auth.resetPasswordForEmail(email, { redirectTo: PASSWORD_RESET_REDIRECT });
+        if (result.error) throw result.error;
+
+        alertBox.innerHTML = '<i class="fas fa-circle-check"></i> تم إرسال رابط إعادة التعيين، تحقق من بريدك الإلكتروني.';
+        alertBox.classList.add('alert-success');
+        alertBox.style.display = 'flex';
+        document.getElementById('forgotForm').reset();
+
+      } catch (err) {
+        alertBox.innerHTML = '<i class="fas fa-circle-exclamation"></i> ' + FS.escapeHTML(err.message || 'حدث خطأ غير متوقع.');
+        alertBox.classList.add('alert-error');
+        alertBox.style.display = 'flex';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال رابط إعادة التعيين';
+      }
+    }
+  </script>
 </body>
 </html>
