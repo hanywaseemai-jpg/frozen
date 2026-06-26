@@ -170,14 +170,25 @@
   }
   .link-back:hover{color:var(--ink);}
 
-  .alert{
-    padding:13px 14px;border-radius:10px;margin-bottom:18px;font-size:13.5px;
-    font-weight:600;display:none;align-items:center;gap:10px;
-  }
-  .alert-error{background:#fef2f2;color:#991b1b;border:1px solid #fca5a5;display:flex;}
-  .alert-success{background:#ecfdf5;color:#065f46;border:1px solid #6ee7b7;display:flex;}
   .loader{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top:2px solid #fff;border-radius:50%;animation:spin .8s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
+
+  .toast-container{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    display:flex;flex-direction:column;gap:10px;z-index:50;
+    width:min(380px, calc(100% - 32px));
+  }
+  .toast{
+    display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:10px;
+    font-size:13.5px;font-weight:600;font-family:'Cairo',sans-serif;
+    background:var(--ink);color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.15);
+    animation:toast-in .25s ease;
+  }
+  .toast.success i{color:#6ee7b7;}
+  .toast.error i{color:#fca5a5;}
+  .toast.toast-out{animation:toast-out .25s ease forwards;}
+  @keyframes toast-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes toast-out{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(8px);}}
 
   .trust-footer{
     margin-top:30px;padding-top:20px;border-top:1px solid var(--line);
@@ -258,8 +269,6 @@
           <h1>تسجيل الدخول</h1>
           <p class="panel-subtitle">أهلاً بك مجدداً في متجر الأطعمة المجمدة</p>
 
-          <div id="alertBox" class="alert" role="alert"></div>
-
           <form id="loginForm" onsubmit="handleLogin(event)">
             <div class="form-group">
               <label for="email">البريد الإلكتروني</label>
@@ -304,8 +313,6 @@
           <h1>إعادة تعيين كلمة المرور</h1>
           <p class="panel-subtitle">أدخل بريدك الإلكتروني، وسنرسل لك رابط إعادة التعيين</p>
 
-          <div id="forgotAlertBox" class="alert" role="alert"></div>
-
           <form id="forgotForm" onsubmit="handleForgotPassword(event)">
             <div class="form-group">
               <label for="resetEmail">البريد الإلكتروني</label>
@@ -336,6 +343,8 @@
     </div>
   </div>
 
+  <div id="toastContainer" class="toast-container"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/utils.js"></script>
@@ -350,10 +359,10 @@
     }
 
     window.addEventListener('load', function () {
-      FS.migrateLegacyKey('user');
-      FS.migrateLegacyKey('rememberMe');
+      fsUtils.migrateLegacyKey('user', 'fs_user');
+      fsUtils.migrateLegacyKey('rememberMe', 'fs_rememberMe');
 
-      var savedUser = FS.getItem('user');
+      var savedUser = fsUtils.safeGetJSON('fs_user', null);
       if (savedUser && savedUser.email) {
         redirectAfterLogin(savedUser.email);
       }
@@ -371,10 +380,6 @@
       var email = document.getElementById('email').value.trim();
       var password = document.getElementById('password').value;
       var btn = document.getElementById('submitBtn');
-      var alertBox = document.getElementById('alertBox');
-
-      alertBox.style.display = 'none';
-      alertBox.className = 'alert';
 
       btn.disabled = true;
       btn.innerHTML = '<span class="loader"></span> جاري التحقق من الحساب...';
@@ -393,21 +398,16 @@
           joinDate: result.data.user.created_at
         };
 
-        FS.setItem('user', sessionUser);
+        fsUtils.safeSetJSON('fs_user', sessionUser);
         if (document.getElementById('remember').checked) {
-          FS.setItem('rememberMe', true);
+          fsUtils.safeSetJSON('fs_rememberMe', true);
         }
 
-        alertBox.innerHTML = '<i class="fas fa-circle-check"></i> تم تسجيل الدخول بنجاح! جاري التوجيه...';
-        alertBox.classList.add('alert-success');
-        alertBox.style.display = 'flex';
-
+        fsUtils.showToast('تم تسجيل الدخول بنجاح! جاري التوجيه...', 'success');
         setTimeout(function () { redirectAfterLogin(sessionUser.email); }, 1100);
 
       } catch (err) {
-        alertBox.innerHTML = '<i class="fas fa-circle-exclamation"></i> ' + FS.escapeHTML(err.message || 'حدث خطأ غير متوقع.');
-        alertBox.classList.add('alert-error');
-        alertBox.style.display = 'flex';
+        fsUtils.showToast(err.message || 'حدث خطأ غير متوقع.', 'error');
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> دخول';
       }
@@ -417,10 +417,6 @@
       e.preventDefault();
       var email = document.getElementById('resetEmail').value.trim();
       var btn = document.getElementById('forgotSubmitBtn');
-      var alertBox = document.getElementById('forgotAlertBox');
-
-      alertBox.style.display = 'none';
-      alertBox.className = 'alert';
 
       try {
         if (!email.includes('@')) throw new Error('صيغة البريد الإلكتروني غير صحيحة.');
@@ -431,15 +427,11 @@
         var result = await sb.auth.resetPasswordForEmail(email, { redirectTo: PASSWORD_RESET_REDIRECT });
         if (result.error) throw result.error;
 
-        alertBox.innerHTML = '<i class="fas fa-circle-check"></i> تم إرسال رابط إعادة التعيين، تحقق من بريدك الإلكتروني.';
-        alertBox.classList.add('alert-success');
-        alertBox.style.display = 'flex';
+        fsUtils.showToast('تم إرسال رابط إعادة التعيين، تحقق من بريدك الإلكتروني.', 'success');
         document.getElementById('forgotForm').reset();
 
       } catch (err) {
-        alertBox.innerHTML = '<i class="fas fa-circle-exclamation"></i> ' + FS.escapeHTML(err.message || 'حدث خطأ غير متوقع.');
-        alertBox.classList.add('alert-error');
-        alertBox.style.display = 'flex';
+        fsUtils.showToast(err.message || 'حدث خطأ غير متوقع.', 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال رابط إعادة التعيين';
