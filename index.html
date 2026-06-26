@@ -150,6 +150,17 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .rail .product-card .product-text{display:none;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 
+/* Category cards (شوب باي كاتيجوري) */
+.cat-rail{gap:18px;padding:6px 2px 16px;}
+.cat-card{flex:0 0 100px;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:9px;border:none;background:none;cursor:pointer;padding:4px 0;}
+.cat-card-img{width:84px;height:84px;border-radius:50%;overflow:hidden;background:var(--frost-pale);border:3px solid var(--frost-line);display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--frost);transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;}
+.cat-card-img img{width:100%;height:100%;object-fit:cover;}
+.cat-card span:last-child{font-size:12.5px;font-weight:700;color:var(--ink);white-space:nowrap;max-width:96px;overflow:hidden;text-overflow:ellipsis;}
+.cat-card:hover .cat-card-img{border-color:var(--frost);transform:translateY(-3px);}
+.cat-card[aria-pressed="true"] .cat-card-img{border-color:var(--frost);box-shadow:0 0 0 4px var(--frost-pale);}
+.cat-card[aria-pressed="true"] span:last-child{color:var(--frost-deep);}
+.cat-card.cat-all .cat-card-img{background:linear-gradient(135deg,var(--frost),var(--frost-deep));color:#fff;border-color:transparent;}
+
 /* Products section */
 .products-section{padding:40px 0 60px;}
 .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px;}
@@ -361,7 +372,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
       <button class="chip" type="button" data-filter="all" aria-pressed="true"><i class="fas fa-border-all" aria-hidden="true"></i> الكل</button>
       <button class="chip chip-fire" type="button" data-filter="bestseller" aria-pressed="false"><i class="fas fa-fire" aria-hidden="true"></i> الأكثر مبيعًا</button>
       <button class="chip chip-deal" type="button" data-filter="offers" aria-pressed="false"><i class="fas fa-tags" aria-hidden="true"></i> عروض</button>
-      <div id="categoriesGrid" style="display:contents;"></div>
     </div>
     <div class="sort-wrap">
       <label for="sortSelect">ترتيب:</label>
@@ -401,6 +411,15 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         <div class="hero-img-skel"></div>
         <div class="hero-img-skel"></div>
       </div>
+    </div>
+  </section>
+
+  <section class="rail-section cat-section" id="categoriesSection">
+    <div class="shell">
+      <div class="section-head">
+        <h2 class="section-title"><i class="fas fa-shapes" aria-hidden="true"></i> تصفح حسب الفئة</h2>
+      </div>
+      <div class="rail cat-rail" id="categoryRail" aria-label="فئات المنتجات"></div>
     </div>
   </section>
 
@@ -631,38 +650,69 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   /* ---------------- categories & filter chips ---------------- */
   async function loadCategories() {
     try {
-      const { data, error } = await sb.from('categories').select('id, name, icon').order('name', { ascending: true });
+      const { data, error } = await sb.from('categories').select('id, name, icon, image_url').order('name', { ascending: true });
       if (error) throw error;
       allCategories = data || [];
-      renderCategories();
+      renderCategoryCards();
     } catch (err) {
       console.error('Categories error:', err);
-      document.getElementById('categoriesGrid').innerHTML = '';
+      const rail = document.getElementById('categoryRail');
+      if (rail) rail.innerHTML = '';
     }
   }
 
-  function renderCategories() {
-    const grid = document.getElementById('categoriesGrid');
-    grid.innerHTML = '';
+  function renderCategoryCards() {
+    const rail = document.getElementById('categoryRail');
+    if (!rail) return;
+    rail.innerHTML = '';
+
+    const allBtn = document.createElement('button');
+    allBtn.type = 'button';
+    allBtn.className = 'cat-card cat-all';
+    allBtn.dataset.filter = 'all';
+    allBtn.setAttribute('aria-pressed', String(currentFilter === 'all'));
+    allBtn.innerHTML = '<span class="cat-card-img"><i class="fas fa-border-all" aria-hidden="true"></i></span><span>الكل</span>';
+    rail.appendChild(allBtn);
+
     allCategories.forEach((c) => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'chip';
+      btn.className = 'cat-card';
       btn.dataset.filter = c.name;
-      btn.setAttribute('aria-pressed', 'false');
-      const icon = document.createElement('i');
-      icon.setAttribute('aria-hidden', 'true');
-      icon.className = /^[a-z0-9\s-]+$/i.test(c.icon || '') ? c.icon : 'fas fa-tag';
-      btn.appendChild(icon);
-      btn.appendChild(document.createTextNode(' ' + (c.name || '')));
-      grid.appendChild(btn);
+      btn.setAttribute('aria-pressed', String(currentFilter === c.name));
+
+      const imgWrap = document.createElement('span');
+      imgWrap.className = 'cat-card-img';
+      if (c.image_url) {
+        const img = document.createElement('img');
+        img.src = c.image_url;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.onerror = function () {
+          imgWrap.innerHTML = '<i class="fas fa-tag" aria-hidden="true"></i>';
+        };
+        imgWrap.appendChild(img);
+      } else {
+        const icon = document.createElement('i');
+        icon.setAttribute('aria-hidden', 'true');
+        icon.className = /^[a-z0-9\s-]+$/i.test(c.icon || '') ? c.icon : 'fas fa-tag';
+        imgWrap.appendChild(icon);
+      }
+
+      const label = document.createElement('span');
+      label.textContent = c.name || '';
+
+      btn.appendChild(imgWrap);
+      btn.appendChild(label);
+      rail.appendChild(btn);
     });
   }
 
-  function setFilter(filter, triggerEl) {
+  function setFilter(filter) {
     currentFilter = filter;
-    document.querySelectorAll('.chip').forEach((el) => el.setAttribute('aria-pressed', 'false'));
-    if (triggerEl) triggerEl.setAttribute('aria-pressed', 'true');
+    document.querySelectorAll('[data-filter]').forEach((el) => {
+      el.setAttribute('aria-pressed', String(el.dataset.filter === filter));
+    });
     renderProducts();
     updateResetVisibility();
   }
@@ -670,7 +720,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   document.getElementById('categoriesNav').addEventListener('click', (e) => {
     const btn = e.target.closest('[data-filter]');
     if (!btn) return;
-    setFilter(btn.dataset.filter, btn);
+    setFilter(btn.dataset.filter);
+  });
+
+  document.getElementById('categoryRail').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-filter]');
+    if (!btn) return;
+    setFilter(btn.dataset.filter);
+    document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
   document.getElementById('sortSelect').addEventListener('change', (e) => {
@@ -682,12 +739,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     document.getElementById('searchInput').value = '';
     document.getElementById('sortSelect').value = 'newest';
     currentSort = 'newest';
-    const allChip = document.querySelector('.chip[data-filter="all"]');
-    setFilter('all', allChip);
+    setFilter('all');
   });
 
   document.getElementById('mobileCatBtn').addEventListener('click', () => {
-    document.getElementById('categoriesNav').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('categoriesSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
   function updateResetVisibility() {
