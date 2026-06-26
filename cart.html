@@ -396,7 +396,9 @@
             box-shadow: var(--shadow-lg);
             animation: toastIn 0.3s ease;
             min-width: 280px;
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
+        .toast.toast-out { opacity: 0; transform: translateX(-12px); }
         @keyframes toastIn {
             from { opacity: 0; transform: translateX(-20px); }
             to { opacity: 1; transform: translateX(0); }
@@ -409,7 +411,6 @@
             .cart-summary { position: static; }
         }
     </style>
-<base target="_blank">
 </head>
 <body>
 
@@ -551,16 +552,29 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.108.2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/utils.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script>
-        const SUPABASE_URL = 'https://ufmzgobtjtetrxvewvxl.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_DEZTCSDOUIcSzs_t0tOAqA_HVOdy8As';
-        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    (function () {
+        const sb = window.sb;
+        const fsUtils = window.fsUtils;
 
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
-        let selectedLocation = JSON.parse(localStorage.getItem('deliveryLocation') || 'null');
+        if (!sb || !fsUtils) {
+            console.error('Shared Supabase client or utils failed to load — check that js/supabase-client.js and js/utils.js exist and load before this page script.');
+            return;
+        }
+
+        const { escapeHTML, safeGetJSON, safeSetJSON, safeRemove, migrateLegacyKey, showToast, PLACEHOLDER_IMG } = fsUtils;
+
+        // Carry forward any cart/location saved under the old, unnamespaced keys
+        migrateLegacyKey('cart', 'fs_cart');
+        migrateLegacyKey('deliveryLocation', 'fs_delivery_location');
+
+        let currentUser = null;
+        let cart = normalizeCart(safeGetJSON('fs_cart', []));
+        let selectedLocation = safeGetJSON('fs_delivery_location', null);
         let selectedPayment = 'cash';
         let pickerMapInstance = null;
         let pickerMarker = null;
@@ -568,14 +582,37 @@
 
         const CAIRO_DEFAULT = { lat: 30.0444, lng: 31.2357 };
 
-        function init() {
+        function normalizeCart(value) {
+            if (!Array.isArray(value)) return [];
+            return value.filter(item => item && item.id != null && Number.isFinite(Number(item.qty)));
+        }
+
+        function getDisplayName(user) {
+            if (!user) return '';
+            return (user.user_metadata && user.user_metadata.full_name) || (user.email ? user.email.split('@')[0] : '');
+        }
+
+        async function init() {
+            await checkAuth();
             if (!currentUser) {
                 showToast('يرجى تسجيل الدخول أولاً', 'error');
-                setTimeout(() => window.location.href = 'login.html', 1500);
+                setTimeout(() => window.location.href = 'login.html', 1200);
                 return;
             }
             renderCart();
             updateLocationButton();
+        }
+
+        // Real Supabase session check (matches index.html) instead of a fake "user" localStorage flag
+        async function checkAuth() {
+            try {
+                const { data, error } = await sb.auth.getSession();
+                if (error) throw error;
+                currentUser = data && data.session ? data.session.user : null;
+            } catch (err) {
+                console.error('Auth session check failed:', err);
+                currentUser = null;
+            }
         }
 
         function renderCart() {
@@ -600,21 +637,24 @@
 
             itemsContainer.innerHTML = cart.map(item => {
                 totalQty += item.qty;
-                const itemTotal = (item.price || 0) * item.qty;
-                subtotal += itemTotal;
+                const price = Number(item.price) || 0;
+                subtotal += price * item.qty;
+                const idAttr = escapeHTML(String(item.id));
+                const name = escapeHTML(item.name || 'منتج');
+                const imgSrc = item.image_url ? escapeHTML(item.image_url) : PLACEHOLDER_IMG;
                 return `
                     <div class="cart-item">
-                        <img src="${item.image_url || 'https://via.placeholder.com/80'}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/80'">
+                        <img src="${imgSrc}" class="cart-item-img" alt="" onerror="this.src='${PLACEHOLDER_IMG}'">
                         <div class="cart-item-info">
-                            <div class="cart-item-name">${item.name}</div>
-                            <div class="cart-item-price">${item.price?.toFixed(2)} ج.م</div>
+                            <div class="cart-item-name">${name}</div>
+                            <div class="cart-item-price">${price.toFixed(2)} ج.م</div>
                             <div class="qty-control">
-                                <button class="qty-btn" onclick="updateQty(${item.id}, -1)"><i class="fas fa-minus"></i></button>
+                                <button class="qty-btn" type="button" data-action="qty-down" data-id="${idAttr}"><i class="fas fa-minus"></i></button>
                                 <span class="qty-value">${item.qty}</span>
-                                <button class="qty-btn" onclick="updateQty(${item.id}, 1)"><i class="fas fa-plus"></i></button>
+                                <button class="qty-btn" type="button" data-action="qty-up" data-id="${idAttr}"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
-                        <button class="remove-btn" onclick="removeItem(${item.id})"><i class="fas fa-trash"></i></button>
+                        <button class="remove-btn" type="button" data-action="remove-item" data-id="${idAttr}"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
             }).join('');
@@ -625,27 +665,37 @@
             summary.style.display = 'block';
         }
 
+        // Delegated listener: handles +/- and remove for every item, safe for UUID ids
+        document.getElementById('cartItems').addEventListener('click', (e) => {
+            const upBtn = e.target.closest('[data-action="qty-up"]');
+            if (upBtn) { updateQty(upBtn.dataset.id, 1); return; }
+            const downBtn = e.target.closest('[data-action="qty-down"]');
+            if (downBtn) { updateQty(downBtn.dataset.id, -1); return; }
+            const removeBtn = e.target.closest('[data-action="remove-item"]');
+            if (removeBtn) { removeItem(removeBtn.dataset.id); }
+        });
+
         function updateQty(productId, delta) {
-            const item = cart.find(i => i.id === productId);
+            const item = cart.find(i => String(i.id) === String(productId));
             if (!item) return;
             item.qty += delta;
             if (item.qty <= 0) {
-                cart = cart.filter(i => i.id !== productId);
+                cart = cart.filter(i => String(i.id) !== String(productId));
             }
-            localStorage.setItem('cart', JSON.stringify(cart));
+            if (!safeSetJSON('fs_cart', cart)) { showToast('تعذر حفظ السلة', 'error'); return; }
             renderCart();
         }
 
         function removeItem(productId) {
-            cart = cart.filter(i => i.id !== productId);
-            localStorage.setItem('cart', JSON.stringify(cart));
+            cart = cart.filter(i => String(i.id) !== String(productId));
+            if (!safeSetJSON('fs_cart', cart)) { showToast('تعذر حفظ السلة', 'error'); return; }
             renderCart();
             showToast('تم إزالة المنتج', 'success');
         }
 
         function openCheckout() {
-            document.getElementById('checkoutName').value = currentUser?.name || '';
-            document.getElementById('checkoutEmail').value = currentUser?.email || '';
+            document.getElementById('checkoutName').value = getDisplayName(currentUser);
+            document.getElementById('checkoutEmail').value = (currentUser && currentUser.email) || '';
             openModal('checkoutModal');
         }
 
@@ -659,8 +709,6 @@
         // ===== Real interactive location picker (Leaflet + OpenStreetMap, no API key needed) =====
         function openLocationPicker() {
             openModal('locationModal');
-            // Leaflet needs the container to be visible before it can size itself correctly,
-            // so we init/refresh it right after the modal becomes visible.
             setTimeout(() => {
                 const startCoords = (selectedLocation && selectedLocation.lat) ? selectedLocation : CAIRO_DEFAULT;
                 if (!pickerMapInstance) {
@@ -676,7 +724,6 @@
                     pickerMapInstance.setView([startCoords.lat, startCoords.lng], 14);
                 }
 
-                // Pre-fill the pin if a location was already saved before
                 if (selectedLocation && selectedLocation.lat) {
                     setPickerPin(selectedLocation.lat, selectedLocation.lng, selectedLocation.address);
                 } else {
@@ -746,7 +793,7 @@
             }
             const addressText = document.getElementById('pickerAddressText').textContent;
             selectedLocation = { lat: pickerCoords.lat, lng: pickerCoords.lng, address: addressText };
-            localStorage.setItem('deliveryLocation', JSON.stringify(selectedLocation));
+            safeSetJSON('fs_delivery_location', selectedLocation);
             closeModal('locationModal');
             updateLocationButton();
             showToast('تم حفظ الموقع', 'success');
@@ -766,7 +813,7 @@
                     <div class="location-card">
                         <i class="fas fa-map-marker-alt"></i>
                         <div class="location-card-text">
-                            <span class="addr">${selectedLocation.address || 'موقع محدد'}</span>
+                            <span class="addr">${escapeHTML(selectedLocation.address || 'موقع محدد')}</span>
                             <span class="coords">${selectedLocation.lat.toFixed(5)}, ${selectedLocation.lng.toFixed(5)}</span>
                         </div>
                         <button type="button" class="location-card-change" onclick="openLocationPicker()">تغيير</button>
@@ -789,12 +836,12 @@
             if (!/^01[0-9]{9}$/.test(phone)) { showToast('رقم التليفون غير صحيح (مثال: 01xxxxxxxxx)', 'error'); return; }
             if (cart.length === 0) { showToast('السلة فارغة', 'error'); return; }
 
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const total = cart.reduce((sum, item) => sum + (Number(item.price) || 0) * item.qty, 0);
             const items = cart.map(item => ({ name: item.name, qty: item.qty, price: item.price }));
 
             const orderData = {
-                customer_name: name || currentUser?.name || 'عميل',
-                customer_email: email || currentUser?.email || '',
+                customer_name: name || getDisplayName(currentUser) || 'عميل',
+                customer_email: email || (currentUser && currentUser.email) || '',
                 customer_phone: phone,
                 total_price: total,
                 status: 'pending',
@@ -806,7 +853,7 @@
 
             try {
                 // Try RPC first
-                let result = await supabase.rpc('insert_order', {
+                let result = await sb.rpc('insert_order', {
                     p_customer_name: orderData.customer_name,
                     p_customer_email: orderData.customer_email,
                     p_customer_phone: orderData.customer_phone,
@@ -819,19 +866,20 @@
 
                 if (result.error) {
                     console.warn('insert_order RPC failed, falling back to direct insert:', result.error.message);
-                    result = await supabase.from('orders').insert([orderData]).select('id').single();
+                    result = await sb.from('orders').insert([orderData]).select('id').single();
                 }
 
                 if (result.error) throw result.error;
 
-                // Get the order ID and format it
-                const orderId = result.data?.id ?? result.data ?? 'جديد';
-                const formattedId = typeof orderId === 'number' ? String(orderId).padStart(6, '0') : '000001';
+                const orderId = (result.data && result.data.id !== undefined) ? result.data.id : result.data;
+                const formattedId = typeof orderId === 'number'
+                    ? String(orderId).padStart(6, '0')
+                    : (orderId ? String(orderId).split('-')[0].toUpperCase() : 'جديد');
 
-                // Clear cart
+                // Clear cart + saved delivery location
                 cart = [];
-                localStorage.setItem('cart', JSON.stringify(cart));
-                localStorage.removeItem('deliveryLocation');
+                safeSetJSON('fs_cart', cart);
+                safeRemove('fs_delivery_location');
                 selectedLocation = null;
 
                 showToast(`تم إرسال الطلب بنجاح! رقم الطلب: #${formattedId}`, 'success');
@@ -842,24 +890,24 @@
                 }, 2000);
 
             } catch (err) {
-                showToast('خطأ في إرسال الطلب: ' + err.message, 'error');
+                showToast('خطأ في إرسال الطلب: ' + (err && err.message ? err.message : 'حدث خطأ غير متوقع'), 'error');
             }
         }
 
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-        function showToast(message, type) {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-            toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
-        }
+        // Expose the handlers referenced by inline onclick="" attributes in the HTML above
+        window.openCheckout = openCheckout;
+        window.selectPayment = selectPayment;
+        window.openLocationPicker = openLocationPicker;
+        window.confirmLocation = confirmLocation;
+        window.getCurrentLocation = getCurrentLocation;
+        window.submitOrder = submitOrder;
+        window.closeModal = closeModal;
 
         document.addEventListener('DOMContentLoaded', init);
+    })();
     </script>
 </body>
 </html>
