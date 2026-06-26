@@ -358,13 +358,31 @@
       window.location.href = target;
     }
 
-    window.addEventListener('load', function () {
+    window.addEventListener('load', async function () {
       fsUtils.migrateLegacyKey('user', 'fs_user');
       fsUtils.migrateLegacyKey('rememberMe', 'fs_rememberMe');
 
-      var savedUser = fsUtils.safeGetJSON('fs_user', null);
-      if (savedUser && savedUser.email) {
-        redirectAfterLogin(savedUser.email);
+      try {
+        var sessionResult = await sb.auth.getSession();
+        var session = sessionResult.data && sessionResult.data.session;
+
+        if (session && session.user && session.user.email) {
+          // Real, valid Supabase session — keep the local cache in sync and redirect.
+          fsUtils.safeSetJSON('fs_user', {
+            id: session.user.id,
+            email: session.user.email,
+            name: (session.user.user_metadata && session.user.user_metadata.full_name) || session.user.email.split('@')[0],
+            joinDate: session.user.created_at
+          });
+          redirectAfterLogin(session.user.email);
+        } else {
+          // No real session — any cached fs_user is stale, so clear it.
+          // This is what was forcing the login page to redirect even
+          // after the actual session had ended.
+          fsUtils.safeRemove('fs_user');
+        }
+      } catch (err) {
+        console.warn('Session check failed:', err);
       }
     });
 
