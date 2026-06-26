@@ -127,14 +127,25 @@
   .panel-footer-links a{color:var(--ink);text-decoration:none;font-weight:700;}
   .panel-footer-links a:hover{text-decoration:underline;}
 
-  .alert{
-    padding:13px 14px;border-radius:10px;margin-bottom:18px;font-size:13.5px;
-    font-weight:600;display:none;align-items:center;gap:10px;
-  }
-  .alert-error{background:#fef2f2;color:#991b1b;border:1px solid #fca5a5;display:flex;}
-  .alert-success{background:#ecfdf5;color:#065f46;border:1px solid #6ee7b7;display:flex;}
   .loader{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top:2px solid #fff;border-radius:50%;animation:spin .8s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
+
+  .toast-container{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    display:flex;flex-direction:column;gap:10px;z-index:50;
+    width:min(380px, calc(100% - 32px));
+  }
+  .toast{
+    display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:10px;
+    font-size:13.5px;font-weight:600;font-family:'Cairo',sans-serif;
+    background:var(--ink);color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.15);
+    animation:toast-in .25s ease;
+  }
+  .toast.success i{color:#6ee7b7;}
+  .toast.error i{color:#fca5a5;}
+  .toast.toast-out{animation:toast-out .25s ease forwards;}
+  @keyframes toast-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes toast-out{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(8px);}}
 
   .trust-footer{
     margin-top:26px;padding-top:18px;border-top:1px solid var(--line);
@@ -218,8 +229,6 @@
         <h1>إنشاء حساب جديد</h1>
         <p class="panel-subtitle">سجل الآن لتتمكن من تسوق أشهى المأكولات وتتبع طلباتك</p>
 
-        <div id="alertBox" class="alert" role="alert"></div>
-
         <form id="signupForm" onsubmit="handleSignup(event)">
           <div class="form-group">
             <label for="fullName">الاسم الكامل</label>
@@ -281,6 +290,8 @@
     </div>
   </div>
 
+  <div id="toastContainer" class="toast-container"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/utils.js"></script>
@@ -293,10 +304,6 @@
       var confirmPassword = document.getElementById('confirmPassword').value;
       var agreeTerms = document.getElementById('agreeTerms').checked;
       var btn = document.getElementById('submitBtn');
-      var alertBox = document.getElementById('alertBox');
-
-      alertBox.style.display = 'none';
-      alertBox.className = 'alert';
 
       try {
         if (!agreeTerms) throw new Error('يجب الموافقة على الشروط والأحكام وسياسة الخصوصية للاستمرار.');
@@ -313,16 +320,12 @@
         });
         if (result.error) throw result.error;
 
-        alertBox.innerHTML = '<i class="fas fa-circle-check"></i> تم إنشاء حسابك بنجاح! جاري الانتقال لصفحة تسجيل الدخول...';
-        alertBox.classList.add('alert-success');
-        alertBox.style.display = 'flex';
+        fsUtils.showToast('تم إنشاء حسابك بنجاح! جاري الانتقال لصفحة تسجيل الدخول...', 'success');
 
         setTimeout(function () { window.location.href = 'login.html'; }, 2000);
 
       } catch (err) {
-        alertBox.innerHTML = '<i class="fas fa-circle-exclamation"></i> ' + FS.escapeHTML(err.message || 'حدث خطأ غير متوقع.');
-        alertBox.classList.add('alert-error');
-        alertBox.style.display = 'flex';
+        fsUtils.showToast(err.message || 'حدث خطأ غير متوقع.', 'error');
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-user-plus"></i> إتمام التسجيل';
       }
