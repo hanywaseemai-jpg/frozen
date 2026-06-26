@@ -150,16 +150,26 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .rail .product-card .product-text{display:none;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 
-/* Category cards (شوب باي كاتيجوري) */
-.cat-rail{gap:18px;padding:6px 2px 16px;}
-.cat-card{flex:0 0 100px;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:9px;border:none;background:none;cursor:pointer;padding:4px 0;}
-.cat-card-img{width:84px;height:84px;border-radius:50%;overflow:hidden;background:var(--frost-pale);border:3px solid var(--frost-line);display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--frost);transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;}
-.cat-card-img img{width:100%;height:100%;object-fit:cover;}
-.cat-card span:last-child{font-size:12.5px;font-weight:700;color:var(--ink);white-space:nowrap;max-width:96px;overflow:hidden;text-overflow:ellipsis;}
-.cat-card:hover .cat-card-img{border-color:var(--frost);transform:translateY(-3px);}
-.cat-card[aria-pressed="true"] .cat-card-img{border-color:var(--frost);box-shadow:0 0 0 4px var(--frost-pale);}
-.cat-card[aria-pressed="true"] span:last-child{color:var(--frost-deep);}
-.cat-card.cat-all .cat-card-img{background:linear-gradient(135deg,var(--frost),var(--frost-deep));color:#fff;border-color:transparent;}
+/* Category cards — product-showcase style */
+.cat-rail{gap:16px;padding:6px 2px 16px;align-items:stretch;}
+.cat-card{flex:0 0 158px;scroll-snap-align:start;display:flex;flex-direction:column;border:2px solid var(--frost-line);background:linear-gradient(165deg,var(--frost-pale),#fff);border-radius:var(--r-md);overflow:hidden;cursor:pointer;padding:0;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;text-align:center;}
+.cat-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-md);border-color:var(--frost);}
+.cat-card-imgbox{height:104px;margin:14px 14px 0;border-radius:14px;background:#fff;border:1px solid var(--frost-line);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.cat-card-imgbox img{height:76%;width:auto;max-width:56%;object-fit:contain;}
+.cat-card-imgbox img + img{margin-inline-start:-12px;}
+.cat-card-icon{font-size:30px;color:var(--frost);}
+.cat-card-label{font-size:13px;font-weight:800;color:var(--ink);padding:10px 8px;line-height:1.35;flex:1;display:flex;align-items:center;justify-content:center;}
+.cat-card-ribbon{background:var(--thaw);color:#fff;font-size:11px;font-weight:800;padding:7px 6px;letter-spacing:.2px;}
+.cat-card-ribbon.cat-card-ribbon-neutral{background:var(--frost-pale);color:var(--frost-deep);}
+.cat-card[aria-pressed="true"]{border-color:var(--frost);box-shadow:0 0 0 3px var(--frost-pale);}
+.cat-card.cat-all .cat-card-imgbox{background:linear-gradient(135deg,var(--frost),var(--frost-deep));}
+.cat-card.cat-all .cat-card-icon{color:#fff;}
+@media (max-width:768px){
+  .cat-card{flex:0 0 128px;}
+  .cat-card-imgbox{height:86px;margin:11px 11px 0;}
+  .cat-card-label{font-size:12px;padding:8px 6px;}
+  .cat-card-ribbon{font-size:10px;padding:6px 4px;}
+}
 
 /* Products section */
 .products-section{padding:40px 0 60px;}
@@ -565,6 +575,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     setupRevealObserver();
     await checkAuth();
     await Promise.all([loadCategories(), loadProducts()]);
+    renderCategoryCards();
     updateBadges();
   }
 
@@ -650,15 +661,63 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   /* ---------------- categories & filter chips ---------------- */
   async function loadCategories() {
     try {
-      const { data, error } = await sb.from('categories').select('id, name, icon, image_url').order('name', { ascending: true });
+      const { data, error } = await sb.from('categories').select('id, name, icon').order('name', { ascending: true });
       if (error) throw error;
       allCategories = data || [];
-      renderCategoryCards();
     } catch (err) {
       console.error('Categories error:', err);
-      const rail = document.getElementById('categoryRail');
-      if (rail) rail.innerHTML = '';
+      allCategories = [];
     }
+  }
+
+  function buildCategoryCard(opts) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'cat-card' + (opts.isAll ? ' cat-all' : '');
+    if (opts.isAll) {
+      btn.dataset.filter = 'all';
+      btn.setAttribute('aria-pressed', String(currentFilter === 'all'));
+    } else {
+      btn.dataset.category = opts.name;
+    }
+
+    const imgbox = document.createElement('div');
+    imgbox.className = 'cat-card-imgbox';
+    if (opts.images && opts.images.length) {
+      opts.images.forEach((src) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.onerror = function () { this.remove(); };
+        imgbox.appendChild(img);
+      });
+    } else {
+      const icon = document.createElement('i');
+      icon.setAttribute('aria-hidden', 'true');
+      icon.className = 'cat-card-icon ' + (opts.isAll
+        ? 'fas fa-border-all'
+        : (/^[a-z0-9\s-]+$/i.test(opts.icon || '') ? opts.icon : 'fas fa-tag'));
+      imgbox.appendChild(icon);
+    }
+
+    const label = document.createElement('div');
+    label.className = 'cat-card-label';
+    label.textContent = opts.name;
+
+    const ribbon = document.createElement('div');
+    if (opts.discount > 0) {
+      ribbon.className = 'cat-card-ribbon';
+      ribbon.textContent = `خصم يصل لـ ${opts.discount}%`;
+    } else {
+      ribbon.className = 'cat-card-ribbon cat-card-ribbon-neutral';
+      ribbon.textContent = 'تشكيلة متنوعة';
+    }
+
+    btn.appendChild(imgbox);
+    btn.appendChild(label);
+    btn.appendChild(ribbon);
+    return btn;
   }
 
   function renderCategoryCards() {
@@ -666,45 +725,15 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     if (!rail) return;
     rail.innerHTML = '';
 
-    const allBtn = document.createElement('button');
-    allBtn.type = 'button';
-    allBtn.className = 'cat-card cat-all';
-    allBtn.dataset.filter = 'all';
-    allBtn.setAttribute('aria-pressed', String(currentFilter === 'all'));
-    allBtn.innerHTML = '<span class="cat-card-img"><i class="fas fa-border-all" aria-hidden="true"></i></span><span>الكل</span>';
-    rail.appendChild(allBtn);
+    const allImages = allProducts.filter((p) => p.image_url).slice(0, 2).map((p) => p.image_url);
+    const allDiscount = allProducts.reduce((max, p) => Math.max(max, getDiscountPercent(p)), 0);
+    rail.appendChild(buildCategoryCard({ isAll: true, name: 'الكل', images: allImages, discount: allDiscount }));
 
     allCategories.forEach((c) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'cat-card';
-      btn.dataset.filter = c.name;
-      btn.setAttribute('aria-pressed', String(currentFilter === c.name));
-
-      const imgWrap = document.createElement('span');
-      imgWrap.className = 'cat-card-img';
-      if (c.image_url) {
-        const img = document.createElement('img');
-        img.src = c.image_url;
-        img.alt = '';
-        img.loading = 'lazy';
-        img.onerror = function () {
-          imgWrap.innerHTML = '<i class="fas fa-tag" aria-hidden="true"></i>';
-        };
-        imgWrap.appendChild(img);
-      } else {
-        const icon = document.createElement('i');
-        icon.setAttribute('aria-hidden', 'true');
-        icon.className = /^[a-z0-9\s-]+$/i.test(c.icon || '') ? c.icon : 'fas fa-tag';
-        imgWrap.appendChild(icon);
-      }
-
-      const label = document.createElement('span');
-      label.textContent = c.name || '';
-
-      btn.appendChild(imgWrap);
-      btn.appendChild(label);
-      rail.appendChild(btn);
+      const items = allProducts.filter((p) => p.category === c.name);
+      const images = items.filter((p) => p.image_url).slice(0, 2).map((p) => p.image_url);
+      const discount = items.reduce((max, p) => Math.max(max, getDiscountPercent(p)), 0);
+      rail.appendChild(buildCategoryCard({ name: c.name || '', icon: c.icon, images, discount }));
     });
   }
 
@@ -714,7 +743,18 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
       el.setAttribute('aria-pressed', String(el.dataset.filter === filter));
     });
     renderProducts();
+    updateRailVisibility();
     updateResetVisibility();
+  }
+
+  function updateRailVisibility() {
+    if (currentFilter === 'all') {
+      renderDealsRail();
+      renderBestsellerRail();
+    } else {
+      document.getElementById('dealsSection').style.display = 'none';
+      document.getElementById('bestsellerSection').style.display = 'none';
+    }
   }
 
   document.getElementById('categoriesNav').addEventListener('click', (e) => {
@@ -724,10 +764,16 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   });
 
   document.getElementById('categoryRail').addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-filter]');
-    if (!btn) return;
-    setFilter(btn.dataset.filter);
-    document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const allBtn = e.target.closest('[data-filter="all"]');
+    if (allBtn) {
+      setFilter('all');
+      document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    const catBtn = e.target.closest('[data-category]');
+    if (catBtn) {
+      window.location.href = `category.html?cat=${encodeURIComponent(catBtn.dataset.category)}`;
+    }
   });
 
   document.getElementById('sortSelect').addEventListener('change', (e) => {
