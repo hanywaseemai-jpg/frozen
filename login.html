@@ -4,19 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تسجيل الدخول - FrozenShop</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232B1810'/%3E%3Cpath d='M32 14v36M16 23l32 18M16 41l32-18' stroke='%23E2622A' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Lalezar&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
   :root{
-    --ink:#0a0a0a;
-    --ink-soft:#1c1c1c;
+    --ink:#2B1810;
+    --ink-soft:#4A2D1C;
     --paper:#ffffff;
-    --mist:#f4f4f3;
-    --line:#e4e4e1;
-    --ash:#6f6f6c;
+    --mist:#FBF4EA;
+    --line:#E8D5B8;
+    --ash:#8A6F5C;
+    --primary:#E2622A;
+    --primary-dark:#B8481C;
   }
 
   *{margin:0;padding:0;box-sizing:border-box;}
@@ -49,7 +52,7 @@
     font-size:13.5px;
     padding:10px 18px;
     border-radius:999px;
-    box-shadow:0 1px 2px rgba(0,0,0,.04);
+    box-shadow:0 1px 2px rgba(43,24,16,.06);
     transition:background .15s ease, color .15s ease, transform .15s ease;
     z-index:10;
   }
@@ -64,10 +67,10 @@
     border:1px solid var(--line);
     border-radius:22px;
     overflow:hidden;
-    box-shadow:0 1px 3px rgba(0,0,0,.05);
+    box-shadow:0 1px 3px rgba(43,24,16,.08);
   }
 
-  /* Dark brand panel with etched frost motif */
+  /* Dark brand panel with rising steam motif */
   .auth-aside{
     flex:0 0 38%;
     background:var(--ink);
@@ -80,12 +83,12 @@
     overflow:hidden;
     min-height:560px;
   }
-  .frost-art{
+  .steam-art{
     position:absolute;
     inset:0;
     width:100%;
     height:100%;
-    opacity:.5;
+    opacity:.9;
   }
   .logo-badge{
     position:relative;
@@ -102,7 +105,7 @@
     font-weight:600;
     font-size:15px;
     line-height:1.9;
-    color:rgba(255,255,255,.82);
+    color:rgba(255,255,255,.85);
   }
 
   .auth-panel{
@@ -113,7 +116,7 @@
     justify-content:center;
   }
 
-  h1{font-size:25px;font-weight:800;color:var(--ink);margin-bottom:6px;}
+  h1{font-family:'Lalezar','Cairo',sans-serif;font-weight:400;font-size:27px;color:var(--ink);margin-bottom:8px;}
   .panel-subtitle{color:var(--ash);font-size:14px;font-weight:600;margin-bottom:26px;}
 
   .form-group{margin-bottom:18px;}
@@ -136,9 +139,9 @@
   }
   input:focus{
     outline:none;
-    border-color:var(--ink);
+    border-color:var(--primary);
     background:#fff;
-    box-shadow:0 0 0 3px rgba(10,10,10,.07);
+    box-shadow:0 0 0 3px rgba(226,98,42,.12);
   }
 
   .remember-forgot{
@@ -146,17 +149,17 @@
     margin-bottom:24px;font-size:13.5px;font-weight:600;
   }
   .remember{display:flex;align-items:center;gap:7px;color:var(--ash);cursor:pointer;}
-  .remember input{width:auto;accent-color:var(--ink);cursor:pointer;}
+  .remember input{width:auto;accent-color:var(--primary);cursor:pointer;}
   .forgot-link{color:var(--ink);text-decoration:none;font-weight:700;background:none;border:none;font-family:inherit;font-size:13.5px;cursor:pointer;padding:0;}
   .forgot-link:hover{text-decoration:underline;}
 
   .btn{
-    width:100%;padding:14px;background:var(--ink);color:#fff;border:none;
+    width:100%;padding:14px;background:var(--primary);color:#fff;border:none;
     border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;
     font-family:'Cairo',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;
     transition:background .15s ease, transform .15s ease;
   }
-  .btn:hover{background:var(--ink-soft);transform:translateY(-1px);}
+  .btn:hover{background:var(--primary-dark);transform:translateY(-1px);}
   .btn:disabled{opacity:.65;cursor:not-allowed;transform:none;}
 
   .panel-footer-links{text-align:center;margin-top:22px;color:var(--ash);font-size:13.5px;font-weight:600;}
@@ -181,11 +184,11 @@
   .toast{
     display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:10px;
     font-size:13.5px;font-weight:600;font-family:'Cairo',sans-serif;
-    background:var(--ink);color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.15);
+    background:var(--ink);color:#fff;box-shadow:0 6px 18px rgba(43,24,16,.2);
     animation:toast-in .25s ease;
   }
-  .toast.success i{color:#6ee7b7;}
-  .toast.error i{color:#fca5a5;}
+  .toast.success i{color:#8fd9a8;}
+  .toast.error i{color:#f3a99a;}
   .toast.toast-out{animation:toast-out .25s ease forwards;}
   @keyframes toast-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
   @keyframes toast-out{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(8px);}}
@@ -204,7 +207,7 @@
   @media (max-width:860px){
     .auth-card{flex-direction:column;border-radius:18px;}
     .auth-aside{min-height:0;padding:30px 26px;}
-    .frost-art{opacity:.4;}
+    .steam-art{opacity:.7;}
     .logo-badge{padding:10px 14px;}
     .logo-badge img{height:26px;}
     .aside-tagline{font-size:13.5px;margin-top:14px;}
@@ -225,30 +228,19 @@
     <div class="auth-card">
 
       <aside class="auth-aside">
-        <svg class="frost-art" viewBox="0 0 360 560" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-          <g stroke="#ffffff" stroke-width="1.1" stroke-linecap="round" fill="none">
-            <g opacity="0.5" transform="translate(70,90)">
-              <line x1="0" y1="-46" x2="0" y2="46"/>
-              <line x1="-40" y1="-23" x2="40" y2="23"/>
-              <line x1="-40" y1="23" x2="40" y2="-23"/>
-              <line x1="0" y1="-34" x2="-12" y2="-44"/><line x1="0" y1="-34" x2="12" y2="-44"/>
-              <line x1="0" y1="34" x2="-12" y2="44"/><line x1="0" y1="34" x2="12" y2="44"/>
-              <line x1="-30" y1="-17" x2="-22" y2="-30"/><line x1="-30" y1="-17" x2="-18" y2="-6"/>
-              <line x1="30" y1="17" x2="22" y2="30"/><line x1="30" y1="17" x2="18" y2="6"/>
+        <svg class="steam-art" viewBox="0 0 360 560" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <g fill="none" stroke-linecap="round">
+            <g transform="translate(66,140)">
+              <path d="M0,92 C10,74 -8,58 2,40 C10,26 -6,12 4,-4 C10,-16 0,-26 6,-44" stroke="#FBF4EA" stroke-width="2" opacity="0.55"/>
+              <path d="M24,84 C32,68 18,54 26,38 C32,26 20,14 26,-2" stroke="#E2622A" stroke-width="2" opacity="0.45"/>
             </g>
-            <g opacity="0.3" transform="translate(290,260) scale(0.6)">
-              <line x1="0" y1="-46" x2="0" y2="46"/>
-              <line x1="-40" y1="-23" x2="40" y2="23"/>
-              <line x1="-40" y1="23" x2="40" y2="-23"/>
-              <line x1="0" y1="-34" x2="-12" y2="-44"/><line x1="0" y1="-34" x2="12" y2="-44"/>
-              <line x1="0" y1="34" x2="-12" y2="44"/><line x1="0" y1="34" x2="12" y2="44"/>
+            <g transform="translate(284,288) scale(0.7)">
+              <path d="M0,92 C10,74 -8,58 2,40 C10,26 -6,12 4,-4 C10,-16 0,-26 6,-44" stroke="#FBF4EA" stroke-width="2" opacity="0.4"/>
+              <path d="M24,84 C32,68 18,54 26,38 C32,26 20,14 26,-2" stroke="#CC8A1E" stroke-width="2" opacity="0.4"/>
             </g>
-            <g opacity="0.4" transform="translate(110,430) scale(0.8)">
-              <line x1="0" y1="-46" x2="0" y2="46"/>
-              <line x1="-40" y1="-23" x2="40" y2="23"/>
-              <line x1="-40" y1="23" x2="40" y2="-23"/>
-              <line x1="-30" y1="-17" x2="-22" y2="-30"/><line x1="-30" y1="-17" x2="-18" y2="-6"/>
-              <line x1="30" y1="17" x2="22" y2="30"/><line x1="30" y1="17" x2="18" y2="6"/>
+            <g transform="translate(116,430) scale(0.85)">
+              <path d="M0,92 C10,74 -8,58 2,40 C10,26 -6,12 4,-4 C10,-16 0,-26 6,-44" stroke="#FBF4EA" stroke-width="2" opacity="0.5"/>
+              <path d="M24,84 C32,68 18,54 26,38 C32,26 20,14 26,-2" stroke="#E2622A" stroke-width="2" opacity="0.45"/>
             </g>
           </g>
         </svg>
@@ -258,7 +250,7 @@
         </div>
 
         <div class="aside-copy">
-          <p class="aside-tagline">جودة تحافظ عليها البرودة، تصل طازجة لباب بيتك في أي وقت.</p>
+          <p class="aside-tagline">نحافظ على الجودة وقت التجميد، عشان لما توصلك تكون بطعم البيت في أي وقت.</p>
         </div>
       </aside>
 
