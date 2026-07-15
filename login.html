@@ -36,7 +36,6 @@
 
   a{font-family:inherit;}
 
-  /* Home button — fixed, always reachable */
   .home-pill{
     position:fixed;
     top:24px;
@@ -70,7 +69,6 @@
     box-shadow:0 1px 3px rgba(43,24,16,.08);
   }
 
-  /* Dark brand panel with rising steam motif */
   .auth-aside{
     flex:0 0 38%;
     background:var(--ink);
@@ -126,6 +124,7 @@
     position:absolute;top:50%;right:15px;transform:translateY(-50%);
     color:var(--ash);font-size:15px;
   }
+  .input-icon-wrapper i.clickable{cursor:pointer;}
   input{
     width:100%;
     padding:13px 44px 13px 15px;
@@ -143,6 +142,18 @@
     background:#fff;
     box-shadow:0 0 0 3px rgba(226,98,42,.12);
   }
+
+  input.otp-input{
+    text-align:center;
+    letter-spacing:8px;
+    font-size:20px;
+    font-weight:700;
+    padding-left:15px;
+  }
+
+  .pw-strength{display:flex;gap:5px;margin-top:8px;}
+  .pw-strength span{height:4px;flex:1;border-radius:3px;background:var(--line);transition:background .2s ease;}
+  .pw-hint{font-size:12px;color:var(--ash);font-weight:600;margin-top:7px;}
 
   .remember-forgot{
     display:flex;align-items:center;justify-content:space-between;
@@ -162,6 +173,16 @@
   .btn:hover{background:var(--primary-dark);transform:translateY(-1px);}
   .btn:disabled{opacity:.65;cursor:not-allowed;transform:none;}
 
+  .btn-ghost{
+    width:100%;padding:12px;background:none;color:var(--ash);border:1.5px solid var(--line);
+    border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;
+    font-family:'Cairo',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;
+    transition:background .15s ease, border-color .15s ease;
+    margin-top:10px;
+  }
+  .btn-ghost:hover{background:var(--mist);border-color:var(--ash);}
+  .btn-ghost:disabled{opacity:.6;cursor:not-allowed;}
+
   .panel-footer-links{text-align:center;margin-top:22px;color:var(--ash);font-size:13.5px;font-weight:600;}
   .panel-footer-links a{color:var(--ink);text-decoration:none;font-weight:700;}
   .panel-footer-links a:hover{text-decoration:underline;}
@@ -174,6 +195,7 @@
   .link-back:hover{color:var(--ink);}
 
   .loader{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top:2px solid #fff;border-radius:50%;animation:spin .8s linear infinite;}
+  .loader.dark{border-color:rgba(43,24,16,.2);border-top-color:var(--ink);}
   @keyframes spin{to{transform:rotate(360deg);}}
 
   .toast-container{
@@ -203,6 +225,11 @@
   .trust-footer .dot{color:var(--line);}
   .trust-footer .contact-icons{display:inline-flex;gap:10px;}
   .trust-footer .contact-icons a{font-size:15px;}
+
+  .resend-note{text-align:center;font-size:12.5px;color:var(--ash);font-weight:600;margin-top:14px;}
+  .resend-note button{background:none;border:none;color:var(--primary);font-weight:700;font-family:inherit;font-size:12.5px;cursor:pointer;padding:0;}
+  .resend-note button:disabled{color:var(--ash);cursor:not-allowed;text-decoration:none;}
+  .resend-note button:not(:disabled):hover{text-decoration:underline;}
 
   @media (max-width:860px){
     .auth-card{flex-direction:column;border-radius:18px;}
@@ -296,16 +323,16 @@
           </div>
         </div>
 
-        <!-- Forgot password view -->
+        <!-- Step 1: Forgot password — enter email -->
         <div id="forgotView" hidden>
           <button type="button" class="link-back" id="backToLoginBtn">
             <i class="fas fa-arrow-right"></i> رجوع لتسجيل الدخول
           </button>
 
-          <h1>إعادة تعيين كلمة المرور</h1>
-          <p class="panel-subtitle">أدخل بريدك الإلكتروني، وسنرسل لك رابط إعادة التعيين</p>
+          <h1>نسيت كلمة المرور؟</h1>
+          <p class="panel-subtitle">أدخل بريدك الإلكتروني، وسنرسل لك كود التحقق</p>
 
-          <form id="forgotForm" onsubmit="handleForgotPassword(event)">
+          <form id="forgotForm" onsubmit="handleSendCode(event)">
             <div class="form-group">
               <label for="resetEmail">البريد الإلكتروني</label>
               <div class="input-icon-wrapper">
@@ -315,9 +342,56 @@
             </div>
 
             <button type="submit" class="btn" id="forgotSubmitBtn">
-              <i class="fas fa-paper-plane"></i> إرسال رابط إعادة التعيين
+              <i class="fas fa-paper-plane"></i> إرسال كود التحقق
             </button>
           </form>
+        </div>
+
+        <!-- Step 2: Enter code + new password -->
+        <div id="codeView" hidden>
+          <button type="button" class="link-back" id="backToForgotBtn">
+            <i class="fas fa-arrow-right"></i> تغيير البريد الإلكتروني
+          </button>
+
+          <h1>أدخل الكود وكلمة المرور الجديدة</h1>
+          <p class="panel-subtitle" id="codeSentSubtitle">تم إرسال كود مكوّن من 6 أرقام إلى بريدك الإلكتروني</p>
+
+          <form id="codeForm" onsubmit="handleVerifyAndReset(event)">
+            <div class="form-group">
+              <label for="otpCode">كود التحقق</label>
+              <div class="input-icon-wrapper">
+                <input type="text" id="otpCode" class="otp-input" required inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="000000" autocomplete="one-time-code">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="newPassword">كلمة المرور الجديدة</label>
+              <div class="input-icon-wrapper">
+                <input type="password" id="newPassword" required minlength="6" placeholder="••••••••" autocomplete="new-password">
+                <i class="fas fa-eye clickable" id="toggleNewPw"></i>
+              </div>
+              <div class="pw-strength">
+                <span id="bar1"></span><span id="bar2"></span><span id="bar3"></span>
+              </div>
+              <p class="pw-hint">٦ أحرف على الأقل</p>
+            </div>
+
+            <div class="form-group">
+              <label for="confirmNewPassword">تأكيد كلمة المرور</label>
+              <div class="input-icon-wrapper">
+                <input type="password" id="confirmNewPassword" required minlength="6" placeholder="••••••••" autocomplete="new-password">
+                <i class="fas fa-eye clickable" id="toggleConfirmPw"></i>
+              </div>
+            </div>
+
+            <button type="submit" class="btn" id="codeSubmitBtn">
+              <i class="fas fa-check"></i> تأكيد وتحديث كلمة المرور
+            </button>
+          </form>
+
+          <div class="resend-note">
+            لم يصلك الكود؟ <button type="button" id="resendBtn">إعادة الإرسال</button>
+          </div>
         </div>
 
         <div class="trust-footer">
@@ -343,7 +417,9 @@
   <script>
     // ---- Config — update with real values when ready ----
     var ADMIN_EMAIL = 'kevin.hany.08@hotmail.com';
-    var PASSWORD_RESET_REDIRECT = window.location.origin + window.location.pathname.replace(/login\.html$/, 'reset-password.html');
+
+    var pendingResetEmail = ''; // remembered between step 1 and step 2
+    var resendTimer = null;
 
     function redirectAfterLogin(email) {
       var target = (email || '').toLowerCase() === ADMIN_EMAIL ? 'admin.html' : 'index.html';
@@ -359,7 +435,6 @@
         var session = sessionResult.data && sessionResult.data.session;
 
         if (session && session.user && session.user.email) {
-          // Real, valid Supabase session — keep the local cache in sync and redirect.
           fsUtils.safeSetJSON('fs_user', {
             id: session.user.id,
             email: session.user.email,
@@ -368,9 +443,6 @@
           });
           redirectAfterLogin(session.user.email);
         } else {
-          // No real session — any cached fs_user is stale, so clear it.
-          // This is what was forcing the login page to redirect even
-          // after the actual session had ended.
           fsUtils.safeRemove('fs_user');
         }
       } catch (err) {
@@ -378,13 +450,53 @@
       }
     });
 
-    function toggleView(showForgot) {
-      document.getElementById('loginView').hidden = showForgot;
-      document.getElementById('forgotView').hidden = !showForgot;
+    // ---- View switching ----
+    function showView(id) {
+      ['loginView', 'forgotView', 'codeView'].forEach(function (v) {
+        document.getElementById(v).hidden = (v !== id);
+      });
     }
-    document.getElementById('showForgotBtn').addEventListener('click', function () { toggleView(true); });
-    document.getElementById('backToLoginBtn').addEventListener('click', function () { toggleView(false); });
+    document.getElementById('showForgotBtn').addEventListener('click', function () { showView('forgotView'); });
+    document.getElementById('backToLoginBtn').addEventListener('click', function () { showView('loginView'); });
+    document.getElementById('backToForgotBtn').addEventListener('click', function () {
+      clearInterval(resendTimer);
+      showView('forgotView');
+    });
 
+    // Only digits in the OTP field
+    document.getElementById('otpCode').addEventListener('input', function () {
+      this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
+    });
+
+    // Password visibility toggles
+    function wireToggle(iconId, inputId) {
+      document.getElementById(iconId).addEventListener('click', function () {
+        var input = document.getElementById(inputId);
+        var isPw = input.type === 'password';
+        input.type = isPw ? 'text' : 'password';
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+      });
+    }
+    wireToggle('toggleNewPw', 'newPassword');
+    wireToggle('toggleConfirmPw', 'confirmNewPassword');
+
+    // Password strength meter
+    document.getElementById('newPassword').addEventListener('input', function () {
+      var val = this.value;
+      var score = 0;
+      if (val.length >= 6) score++;
+      if (val.length >= 10) score++;
+      if (/[0-9]/.test(val) && /[a-zA-Z]/.test(val)) score++;
+
+      var bars = [document.getElementById('bar1'), document.getElementById('bar2'), document.getElementById('bar3')];
+      var colors = ['#E2622A', '#CC8A1E', '#2F9E51'];
+      bars.forEach(function (bar, i) {
+        bar.style.background = i < score ? colors[score - 1] : 'var(--line)';
+      });
+    });
+
+    // ---- Login ----
     async function handleLogin(e) {
       e.preventDefault();
       var email = document.getElementById('email').value.trim();
@@ -423,7 +535,8 @@
       }
     }
 
-    async function handleForgotPassword(e) {
+    // ---- Step 1: send OTP code to email ----
+    async function handleSendCode(e) {
       e.preventDefault();
       var email = document.getElementById('resetEmail').value.trim();
       var btn = document.getElementById('forgotSubmitBtn');
@@ -434,17 +547,120 @@
         btn.disabled = true;
         btn.innerHTML = '<span class="loader"></span> جاري الإرسال...';
 
-        var result = await sb.auth.resetPasswordForEmail(email, { redirectTo: PASSWORD_RESET_REDIRECT });
+        // shouldCreateUser:false prevents the OTP flow from silently creating
+        // a brand-new account for an email that isn't registered.
+        var result = await sb.auth.resetPasswordForEmail(email, { shouldCreateUser: false });
         if (result.error) throw result.error;
 
-        fsUtils.showToast('تم إرسال رابط إعادة التعيين، تحقق من بريدك الإلكتروني.', 'success');
-        document.getElementById('forgotForm').reset();
+        pendingResetEmail = email;
+        document.getElementById('codeSentSubtitle').textContent = 'تم إرسال كود مكوّن من 6 أرقام إلى ' + email;
+        document.getElementById('codeForm').reset();
+        document.getElementById('bar1').style.background = 'var(--line)';
+        document.getElementById('bar2').style.background = 'var(--line)';
+        document.getElementById('bar3').style.background = 'var(--line)';
+
+        showView('codeView');
+        startResendCooldown();
+        fsUtils.showToast('تم إرسال الكود، تحقق من بريدك الإلكتروني.', 'success');
 
       } catch (err) {
         fsUtils.showToast(err.message || 'حدث خطأ غير متوقع.', 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال رابط إعادة التعيين';
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال كود التحقق';
+      }
+    }
+
+    // ---- Resend cooldown ----
+    function startResendCooldown() {
+      var resendBtn = document.getElementById('resendBtn');
+      var seconds = 45;
+      resendBtn.disabled = true;
+      resendBtn.textContent = 'إعادة الإرسال بعد ' + seconds + ' ث';
+
+      clearInterval(resendTimer);
+      resendTimer = setInterval(function () {
+        seconds--;
+        if (seconds <= 0) {
+          clearInterval(resendTimer);
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'إعادة الإرسال';
+        } else {
+          resendBtn.textContent = 'إعادة الإرسال بعد ' + seconds + ' ث';
+        }
+      }, 1000);
+    }
+
+    document.getElementById('resendBtn').addEventListener('click', async function () {
+      var resendBtn = this;
+      try {
+        resendBtn.disabled = true;
+        var result = await sb.auth.resetPasswordForEmail(pendingResetEmail, { shouldCreateUser: false });
+        if (result.error) throw result.error;
+        fsUtils.showToast('تم إرسال كود جديد.', 'success');
+        startResendCooldown();
+      } catch (err) {
+        fsUtils.showToast(err.message || 'تعذر إعادة إرسال الكود.', 'error');
+        resendBtn.disabled = false;
+        resendBtn.textContent = 'إعادة الإرسال';
+      }
+    });
+
+    // ---- Step 2: verify OTP code + set new password ----
+    async function handleVerifyAndReset(e) {
+      e.preventDefault();
+      var code = document.getElementById('otpCode').value.trim();
+      var newPassword = document.getElementById('newPassword').value;
+      var confirmNewPassword = document.getElementById('confirmNewPassword').value;
+      var btn = document.getElementById('codeSubmitBtn');
+
+      if (code.length !== 6) {
+        fsUtils.showToast('كود التحقق يجب أن يتكون من 6 أرقام.', 'error');
+        return;
+      }
+      if (newPassword.length < 6) {
+        fsUtils.showToast('كلمة المرور يجب ألا تقل عن 6 أحرف.', 'error');
+        return;
+      }
+      if (newPassword !== confirmNewPassword) {
+        fsUtils.showToast('كلمتا المرور غير متطابقتين.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loader"></span> جاري التحقق...';
+
+      try {
+        // Verifying the recovery OTP signs the user in with a temporary session.
+        var verifyResult = await sb.auth.verifyOtp({
+          email: pendingResetEmail,
+          token: code,
+          type: 'recovery'
+        });
+        if (verifyResult.error) throw verifyResult.error;
+
+        // Now that we have a session, set the new password.
+        var updateResult = await sb.auth.updateUser({ password: newPassword });
+        if (updateResult.error) throw updateResult.error;
+
+        fsUtils.showToast('تم تحديث كلمة المرور بنجاح! جاري تسجيل الدخول...', 'success');
+
+        var sessionUser = {
+          id: updateResult.data.user.id,
+          email: updateResult.data.user.email,
+          name: (updateResult.data.user.user_metadata && updateResult.data.user.user_metadata.full_name) || pendingResetEmail.split('@')[0],
+          joinDate: updateResult.data.user.created_at
+        };
+        fsUtils.safeSetJSON('fs_user', sessionUser);
+
+        setTimeout(function () { redirectAfterLogin(sessionUser.email); }, 1200);
+
+      } catch (err) {
+        var msg = err.message || 'حدث خطأ غير متوقع.';
+        if (/expired|invalid/i.test(msg)) msg = 'الكود غير صحيح أو منتهي الصلاحية.';
+        fsUtils.showToast(msg, 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check"></i> تأكيد وتحديث كلمة المرور';
       }
     }
   </script>
