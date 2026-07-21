@@ -923,11 +923,21 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/utils.js"></script>
     <script>
 
-        const SUPABASE_URL = 'https://ufmzgobtjtetrxvewvxl.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_DEZTCSDOUIcSzs_t0tOAqA_HVOdy8As';
-        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // ---- Config ----
+        var ADMIN_EMAIL = 'kevin.hany.08@hotmail.com';
+
+        // supabase-client.js من المفروض يعرّف الـ client باسم "sb" (زي login.html).
+        // السطر ده fallback: لو لسبب ما "sb" مش موجود بس فيه "supabase" جاهز، أو العكس،
+        // بيوحّد الاسمين عشان باقي الكود (اللي بيستخدم supabase.rpc(...)) يشتغل من غير ما نغيره كله.
+        if (typeof sb !== 'undefined' && typeof supabase === 'undefined') {
+            var supabase = sb;
+        } else if (typeof supabase !== 'undefined' && typeof sb === 'undefined') {
+            var sb = supabase;
+        }
 
         let currentUser = null;
         let allOrders = [];
@@ -939,15 +949,58 @@
         const REFRESH_INTERVAL = 20000;
 
         async function checkAuth() {
-            const savedUser = localStorage.getItem('user');
-            if (!savedUser) { window.location.href = 'login.html'; return; }
-            currentUser = JSON.parse(savedUser);
-            if (currentUser.email !== 'kevin.hany.08@hotmail.com') { window.location.href = 'index.html'; return; }
-            document.getElementById('userName').textContent = currentUser.name || 'Admin';
-            document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
+            // نقل أي مفاتيح قديمة من login.html القديم لو لسه موجودة
+            if (typeof fsUtils !== 'undefined' && fsUtils.migrateLegacyKey) {
+                fsUtils.migrateLegacyKey('user', 'fs_user');
+                fsUtils.migrateLegacyKey('rememberMe', 'fs_rememberMe');
+            }
+
+            try {
+                const { data, error } = await sb.auth.getSession();
+                const session = data && data.session;
+
+                if (error || !session || !session.user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                if ((session.user.email || '').toLowerCase() !== ADMIN_EMAIL) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                currentUser = {
+                    id: session.user.id,
+                    email: session.user.email,
+                    name: (session.user.user_metadata && session.user.user_metadata.full_name) || session.user.email.split('@')[0]
+                };
+
+                if (typeof fsUtils !== 'undefined' && fsUtils.safeSetJSON) {
+                    fsUtils.safeSetJSON('fs_user', currentUser);
+                }
+
+                document.getElementById('userName').textContent = currentUser.name || 'Admin';
+                document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
+
+            } catch (err) {
+                console.error('Auth check failed:', err);
+                window.location.href = 'login.html';
+            }
         }
 
-        function logout() {
+        async function logout() {
+            try {
+                if (typeof sb !== 'undefined') await sb.auth.signOut();
+            } catch (err) {
+                console.error('Sign out failed:', err);
+            }
+            if (typeof fsUtils !== 'undefined' && fsUtils.safeRemove) {
+                fsUtils.safeRemove('fs_user');
+                fsUtils.safeRemove('fs_rememberMe');
+            } else {
+                localStorage.removeItem('fs_user');
+                localStorage.removeItem('fs_rememberMe');
+            }
             localStorage.removeItem('user');
             localStorage.removeItem('rememberMe');
             window.location.href = 'login.html';
@@ -970,9 +1023,6 @@
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
         // ========== NOTIFICATION SOUND ==========
-        // Lazily creates a WebAudio context and warms it up on the first
-        // click anywhere on the page, so the very first real notification
-        // isn't silently blocked by autoplay restrictions.
         document.addEventListener('click', function initAudioOnce() {
             try {
                 window.__fsAudioCtx = window.__fsAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
