@@ -54,8 +54,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .marquee-track i{color:var(--gold);}
 @keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
+/* Sticky top group — header + toolbar move and pin together */
+.site-top{position:sticky;top:0;z-index:200;}
+
 /* Header */
-.header{background:rgba(251,244,234,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--cream-line);position:sticky;top:0;z-index:200;}
+.header{background:rgba(251,244,234,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--cream-line);}
 .header-inner{max-width:1280px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:20px;}
 .logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0;}
 .logo img{height:40px;width:auto;object-fit:contain;}
@@ -395,6 +398,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   </div>
 </div>
 
+<div class="site-top">
 <header class="header">
   <div class="header-inner">
     <a href="index.html" class="logo">
@@ -453,6 +457,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     </div>
   </div>
 </nav>
+</div>
 
 <main id="main-content">
   <section class="hero">
