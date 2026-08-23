@@ -932,11 +932,9 @@
 
         // supabase-client.js من المفروض يعرّف الـ client باسم "sb" (زي login.html).
         // السطر ده fallback: لو لسبب ما "sb" مش موجود بس فيه "supabase" جاهز، أو العكس،
-        // بيوحّد الاسمين عشان باقي الكود (اللي بيستخدم supabase.rpc(...)) يشتغل من غير ما نغيره كله.
-        if (typeof sb !== 'undefined' && typeof supabase === 'undefined') {
-            var supabase = sb;
-        } else if (typeof supabase !== 'undefined' && typeof sb === 'undefined') {
-            var sb = supabase;
+        // بيوحّد الاسمين عشان باقي الكود (اللي بيستخدم sb.rpc(...)) يشتغل من غير ما نغيره كله.
+        if (typeof sb === 'undefined') {
+            console.error('Supabase client (sb) غير معرّف — تأكد إن js/supabase-client.js اتحمّل قبل السكريبت ده');
         }
 
         let currentUser = null;
@@ -1128,7 +1126,7 @@
         async function loadOrders() {
             showLoading('ordersLoading', true);
             try {
-                const { data, error } = await supabase.rpc('get_all_orders');
+                const { data, error } = await sb.rpc('get_all_orders');
                 if (error) throw error;
                 allOrders = data || [];
                 checkForNewOrders(allOrders);
@@ -1210,7 +1208,7 @@
 
         async function updateOrderStatus(orderId, newStatus) {
             try {
-                const { error } = await supabase.rpc('update_order_status', {
+                const { error } = await sb.rpc('update_order_status', {
                     order_id: orderId,
                     new_status: newStatus
                 });
@@ -1228,7 +1226,7 @@
         async function deleteOrder(orderId) {
             if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) return;
             try {
-                const { error } = await supabase.rpc('delete_order_by_id', { order_id: orderId });
+                const { error } = await sb.rpc('delete_order_by_id', { order_id: orderId });
                 if (error) throw error;
                 allOrders = allOrders.filter(o => o.id !== orderId);
                 if (knownOrderIds) knownOrderIds.delete(orderId);
@@ -1288,7 +1286,7 @@
         async function loadProducts() {
             showLoading('productsLoading', true);
             try {
-                const { data, error } = await supabase.rpc('get_all_products');
+                const { data, error } = await sb.rpc('get_all_products');
                 if (error) throw error;
                 allProducts = data || [];
                 renderProducts();
@@ -1334,7 +1332,7 @@
 
         async function toggleOutOfStock(id, newValue) {
             try {
-                const { error } = await supabase.rpc('toggle_product_out_of_stock', { p_id: id, p_value: newValue });
+                const { error } = await sb.rpc('toggle_product_out_of_stock', { p_id: id, p_value: newValue });
                 if (error) throw error;
                 const p = allProducts.find(x => x.id === id);
                 if (p) p.out_of_stock = newValue;
@@ -1345,7 +1343,7 @@
 
         async function toggleBestseller(id, newValue) {
             try {
-                const { error } = await supabase.rpc('toggle_product_bestseller', { p_id: id, p_value: newValue });
+                const { error } = await sb.rpc('toggle_product_bestseller', { p_id: id, p_value: newValue });
                 if (error) throw error;
                 const p = allProducts.find(x => x.id === id);
                 if (p) p.is_bestseller = newValue;
@@ -1407,7 +1405,7 @@
 
             try {
                 if (id) {
-                    const { error } = await supabase.rpc('update_product_by_id', {
+                    const { error } = await sb.rpc('update_product_by_id', {
                         p_id: parseInt(id),
                         p_name: name,
                         p_description: description,
@@ -1422,7 +1420,7 @@
                     if (error) throw error;
                     showToast('تم تحديث المنتج', 'success');
                 } else {
-                    const { error } = await supabase.rpc('insert_product', {
+                    const { error } = await sb.rpc('insert_product', {
                         p_name: name,
                         p_description: description,
                         p_price: price,
@@ -1444,7 +1442,7 @@
         async function deleteProduct(id) {
             if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
             try {
-                const { error } = await supabase.rpc('delete_product_by_id', { p_id: id });
+                const { error } = await sb.rpc('delete_product_by_id', { p_id: id });
                 if (error) throw error;
                 allProducts = allProducts.filter(p => p.id !== id);
                 renderProducts();
@@ -1456,7 +1454,7 @@
         async function loadCategories() {
             showLoading('categoriesLoading', true);
             try {
-                const { data, error } = await supabase.rpc('get_all_categories');
+                const { data, error } = await sb.rpc('get_all_categories');
                 if (error) throw error;
                 allCategories = data || [];
                 renderCategories();
@@ -1511,7 +1509,7 @@
 
             try {
                 if (id) {
-                    const { error } = await supabase.rpc('update_category_by_id', {
+                    const { error } = await sb.rpc('update_category_by_id', {
                         c_id: parseInt(id),
                         c_name: name,
                         c_icon: icon
@@ -1519,7 +1517,7 @@
                     if (error) throw error;
                     showToast('تم تحديث الفئة', 'success');
                 } else {
-                    const { error } = await supabase.rpc('insert_category', {
+                    const { error } = await sb.rpc('insert_category', {
                         c_name: name,
                         c_icon: icon
                     });
@@ -1534,7 +1532,7 @@
         async function deleteCategory(id) {
             if (!confirm('هل أنت متأكد من حذف هذه الفئة؟')) return;
             try {
-                const { error } = await supabase.rpc('delete_category_by_id', { c_id: id });
+                const { error } = await sb.rpc('delete_category_by_id', { c_id: id });
                 if (error) throw error;
                 allCategories = allCategories.filter(c => c.id !== id);
                 renderCategories();
@@ -1545,7 +1543,7 @@
         // ========== STATS ==========
         async function updateStats() {
             try {
-                const { data, error } = await supabase.rpc('get_dashboard_stats');
+                const { data, error } = await sb.rpc('get_dashboard_stats');
                 if (error) throw error;
                 if (data && data.length > 0) {
                     const stats = data[0];
