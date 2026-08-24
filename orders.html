@@ -280,36 +280,44 @@
 
         async function loadOrders() {
             try {
-                let data, error;
+                let data = null;
+                let error = null;
 
-                // Try get_user_orders RPC first
-                try {
-                    const result = await supabase.rpc('get_user_orders', { p_email: currentUser.email });
-                    data = result.data;
-                    error = result.error;
-                } catch (e) {
-                    // Fallback
-                    const result = await supabase.from('orders').select('*').order('created_at', { ascending: false });
-                    data = result.data;
-                    error = result.error;
+                // Try RPC first
+                const rpcResult = await supabase.rpc('get_user_orders', {
+                    p_email: currentUser.email
+                });
+
+                if (!rpcResult.error) {
+                    data = rpcResult.data || [];
+                } else {
+                    console.warn('RPC failed, using fallback:', rpcResult.error);
+
+                    // Fallback: query only this user's orders
+                    const fallbackResult = await supabase
+                        .from('orders')
+                        .select('*')
+                        .eq('customer_email', currentUser.email)
+                        .order('created_at', { ascending: false });
+
+                    data = fallbackResult.data || [];
+                    error = fallbackResult.error;
                 }
 
                 if (error) throw error;
 
-                // Filter by user email if using fallback
-                let userOrders = data || [];
-                if (!userOrders.length || !userOrders[0]?.customer_email) {
-                    userOrders = (data || []).filter(o => o.customer_email === currentUser.email);
-                }
+                renderOrders(data);
 
-                renderOrders(userOrders);
             } catch (err) {
-                showToast('خطأ في التحميل: ' + err.message, 'error');
+                console.error('loadOrders error:', err);
+
+                showToast('خطأ في التحميل: ' + (err.message || 'خطأ غير معروف'), 'error');
+
                 document.getElementById('ordersList').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-circle"></i>
                         <h3>خطأ في تحميل الطلبات</h3>
-                        <p>${err.message}</p>
+                        <p>${err.message || 'حدث خطأ غير معروف'}</p>
                     </div>
                 `;
             }
@@ -360,7 +368,7 @@
                         </div>
                         <div class="order-footer">
                             <span class="order-date">${formatDate(order.created_at)}</span>
-                            <span class="order-total">${order.total_price?.toFixed(2) || '0.00'} ج.م</span>
+                            <span class="order-total">${Number(order.total_price || 0).toFixed(2)} ج.م</span>
                         </div>
                     </div>
                 `;
